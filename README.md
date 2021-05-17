@@ -1,2 +1,2 @@
 # APCSChineseFlashcards
-A Java Swing flashcard application (think Quizlet), but tailored for Chinese.
+A Java Swing flashcard application (think Quizlet) but tailored for Chinese.
