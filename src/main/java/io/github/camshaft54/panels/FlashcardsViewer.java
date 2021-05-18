@@ -22,9 +22,13 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
     private JButton rightButton;
     private final ArrayList<Flashcard> flashcards = new ArrayList<>();
     private int currentFlashcard = 0;
+    private int termType;
+    private int definitionType;
 
     public FlashcardsViewer() {
         isVisible = true; // TODO: Implement this
+        termType = Flashcard.CHINESE;
+        definitionType = Flashcard.ENGLISH;
 
         setLayout(new BorderLayout());
 
@@ -41,11 +45,10 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         // Add all of the flashcards panels to the inner flashcard panel
         AtomicInteger i = new AtomicInteger();
         WelcomePanel.selectedSet.getCards().forEach(card -> {
-            flashcards.add(new Flashcard(card, 0)); // TODO: change this to whatever user selects
+            flashcards.add(new Flashcard(card, termType));
             flashcardPanel.add(flashcards.get(flashcards.size()-1), i.get());
             i.getAndAdd(1);
         });
-//        flashcardPanel.add(Flashcard.getEndFlashcard(), i.get());
 
         // Add toolbar
         addToolbar();
@@ -65,16 +68,33 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         Border lineBorder = BorderFactory.createLineBorder(Color.WHITE, 2);
         Border margin = new EmptyBorder(5, 5, 5, 5);
         cardCounter.setBorder(new CompoundBorder(lineBorder, margin));
+        JButton resetButton = new JButton("↻");
+        resetButton.addActionListener(this);
+
+
+        JComboBox<String> termSelector = new JComboBox<>(new String[]{"Chinese", "Pinyin", "English"});
+        termSelector.setName("termSelector");
+        termSelector.addActionListener(this);
+        JComboBox<String> definitionSelector = new JComboBox<>(new String[]{"Chinese", "Pinyin", "English"});
+        definitionSelector.setSelectedIndex(2);
+        definitionSelector.setName("definitionSelector");
+        definitionSelector.addActionListener(this);
 
         // Create and add toolbar JPanel
         JPanel toolbar = new JPanel();
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
         toolbar.setBorder(new EmptyBorder(0, 10, 10, 10));
         toolbar.add(cardCounter);
-        toolbar.add(Box.createHorizontalGlue());
+        toolbar.add(Box.createHorizontalStrut(5));
+        toolbar.add(resetButton);
+        toolbar.add(Box.createHorizontalStrut(10));
         toolbar.add(leftButton);
         toolbar.add(Box.createHorizontalStrut(5));
         toolbar.add(rightButton);
+        toolbar.add(Box.createHorizontalStrut(10));
+        toolbar.add(termSelector);
+        toolbar.add(new JLabel("->"));
+        toolbar.add(definitionSelector);
         add(toolbar, BorderLayout.SOUTH);
     }
 
@@ -107,8 +127,8 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
 
     public void incrementFlashcard() {
         cardLayout.next(flashcardPanel);
-        flashcards.get(currentFlashcard).showSide(0);
         currentFlashcard++;
+        flashcards.get(currentFlashcard).showSide(termType);
         rightButton.setEnabled(currentFlashcard < flashcards.size() - 1);
         leftButton.setEnabled(currentFlashcard > 0);
         cardCounter.setText((currentFlashcard + 1) + " / " + flashcards.size());
@@ -116,27 +136,61 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
 
     public void decrementFlashcard() {
         cardLayout.previous(flashcardPanel);
-        flashcards.get(currentFlashcard).showSide(0);
         currentFlashcard--;
+        flashcards.get(currentFlashcard).showSide(termType);
         rightButton.setEnabled(currentFlashcard < flashcards.size() - 1);
         leftButton.setEnabled(currentFlashcard > 0);
         cardCounter.setText((currentFlashcard + 1) + " / " + flashcards.size());
     }
 
-    // TODO: implement user feedback from JComboBox
+    public void resetFlashcards() {
+        cardLayout.first(flashcardPanel);
+        currentFlashcard = 0;
+        flashcards.get(currentFlashcard).showSide(termType);
+        leftButton.setEnabled(false);
+        rightButton.setEnabled(currentFlashcard < flashcards.size() - 1);
+        cardCounter.setText("1 / " + flashcards.size());
+    }
+
     public void flipFlashcard() {
-        if (flashcards.get(currentFlashcard).getCurrentSide() == Flashcard.PINYIN) {
-            flashcards.get(currentFlashcard).showSide(Flashcard.ENGLISH);
+        if (flashcards.get(currentFlashcard).getCurrentSide() == termType) {
+            flashcards.get(currentFlashcard).showSide(definitionType);
         } else {
-            flashcards.get(currentFlashcard).showSide(Flashcard.PINYIN);
+            flashcards.get(currentFlashcard).showSide(termType);
         }
     }
 
+    public void updateTerm(String termType) {
+        switch (termType) {
+            case "English" -> this.termType = Flashcard.ENGLISH;
+            case "Pinyin" -> this.termType = Flashcard.PINYIN;
+            case "Chinese" -> this.termType = Flashcard.CHINESE;
+        }
+        flashcards.get(currentFlashcard).showSide(this.termType);
+    }
+
+    public void updateDefinition(String definitionType) {
+        switch (definitionType) {
+            case "English" -> this.definitionType = Flashcard.ENGLISH;
+            case "Pinyin" -> this.definitionType = Flashcard.PINYIN;
+            case "Chinese" -> this.definitionType = Flashcard.CHINESE;
+        }
+        flashcards.get(currentFlashcard).showSide(this.termType);
+    }
+
+    @SuppressWarnings("rawtypes")
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (e.getSource() instanceof JComboBox && ((JComboBox) e.getSource()).getSelectedItem() != null) {
+            switch (((JComboBox) e.getSource()).getName()) {
+                case "termSelector" -> updateTerm((String) ((JComboBox) e.getSource()).getSelectedItem());
+                case "definitionSelector" -> updateDefinition((String) ((JComboBox) e.getSource()).getSelectedItem());
+            }
+        }
         switch (e.getActionCommand()) {
             case "<" -> decrementFlashcard();
             case ">" -> incrementFlashcard();
+            case "↻" -> resetFlashcards();
         }
     }
 

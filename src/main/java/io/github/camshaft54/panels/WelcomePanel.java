@@ -19,14 +19,13 @@ public class WelcomePanel extends JPanel implements ActionListener {
         Font welcomeFont = new Font("Arial Nova", Font.PLAIN, 38);
         welcomeText1.setAlignmentX(Component.CENTER_ALIGNMENT);
         welcomeText1.setFont(welcomeFont);
-        add(welcomeText1);
         JLabel welcomeText2 = new JLabel("Chinese Flashcard System!");
         welcomeText2.setAlignmentX(Component.CENTER_ALIGNMENT);
         welcomeText2.setFont(welcomeFont);
-        add(welcomeText2);
 
         JLabel setMenuInfo = new JLabel("Select Set:");
         setMenuInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         String[] setMenuOptions = new String[ChineseFlashcards.sets.size()];
         for (int i = 0; i < setMenuOptions.length; i++) {
             if (i == 0) {
@@ -44,16 +43,20 @@ public class WelcomePanel extends JPanel implements ActionListener {
         startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startButton.addActionListener(this);
 
-        add(new JLabel("Select Set:"));
+        add(welcomeText1);
+        add(welcomeText2);
+        add(Box.createVerticalStrut(10));
+        add(setMenuInfo);
         add(setMenu);
+        add(Box.createVerticalStrut(10));
         add(startButton);
     }
 
-
+    @SuppressWarnings("rawtypes")
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JComboBox) {
-            selectedSet = ChineseFlashcards.sets.get(((JComboBox<String>) e.getSource()).getSelectedIndex());
+            selectedSet = ChineseFlashcards.sets.get(((JComboBox) e.getSource()).getSelectedIndex());
         } else if (e.getActionCommand().equals("Start")) {
             ChineseFlashcards.mainWindow.showFlashcardPanel();
         }
