@@ -32,18 +32,35 @@ public class WelcomePanel extends JPanel implements ActionListener {
         for (int i = 0; i < setMenuOptions.length; i++) {
             setMenuOptions[i] = ChineseFlashcards.sets.get(i).getName();
         }
-        setMenu = new JComboBox<>(setMenuOptions);
+        if (setMenuOptions.length > 0) {
+            setMenu = new JComboBox<>(setMenuOptions);
+        } else {
+            setMenu = new JComboBox<>();
+            setMenu.setEnabled(false);
+        }
         setMenu.setMaximumSize(new Dimension(175, 30));
         setMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
         setMenu.addActionListener(this);
 
         JCheckBox showStarredCards = new JCheckBox("Starred Cards");
         showStarredCards.addItemListener(e -> useStarredCards = e.getStateChange() == ItemEvent.SELECTED);
+        showStarredCards.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton startButton = new JButton("Start");
         startButton.setFont(Card.getEnglishFont(20));
         startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startButton.addActionListener(this);
+
+        JButton newButton = new JButton("New");
+        newButton.setFont(Card.getEnglishFont(20));
+        newButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        newButton.addActionListener(this);
+
+        if (setMenuOptions.length == 0) {
+            setMenu.setEnabled(false);
+            showStarredCards.setEnabled(false);
+            startButton.setEnabled(false);
+        }
 
         add(welcomeText1);
         add(welcomeText2);
@@ -54,6 +71,8 @@ public class WelcomePanel extends JPanel implements ActionListener {
         add(showStarredCards);
         add(Box.createVerticalStrut(10));
         add(startButton);
+        add(Box.createVerticalStrut(10));
+        add(newButton);
     }
 
     @SuppressWarnings("rawtypes")
@@ -69,6 +88,8 @@ public class WelcomePanel extends JPanel implements ActionListener {
                 }
             }
             ChineseFlashcards.mainWindow.showFlashcardPanel(selectedSet, useStarredCards);
+        } else if (e.getActionCommand().equals("New")) {
+            ChineseFlashcards.mainWindow.showEditorPanel();
         }
     }
 }

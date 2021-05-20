@@ -42,7 +42,7 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         flashcardPanel.setLayout(new CardLayout());
         cardLayout = (CardLayout) flashcardPanel.getLayout();
         flashcardPanel.addMouseListener(this);
-        Border lineBorder = BorderFactory.createLineBorder(Color.WHITE, 2);
+        Border lineBorder = BorderFactory.createLineBorder(new Color(196, 196, 196), 2);
         Border margin = new EmptyBorder(10, 10, 10, 10);
         flashcardPanel.setBorder(new CompoundBorder(margin, lineBorder));
         add(flashcardPanel, BorderLayout.CENTER);
@@ -66,7 +66,7 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
     private void addToolbars() {
         // Create previous and next buttons for flashcards, card counter, and reset button
         cardCounter = new JLabel((currentFlashcard + 1) + " / " + flashcards.size());
-        Border lineBorder = BorderFactory.createLineBorder(Color.WHITE, 2);
+        Border lineBorder = BorderFactory.createLineBorder(new Color(196, 196, 196), 2);
         Border margin = new EmptyBorder(5, 5, 5, 5);
         cardCounter.setBorder(new CompoundBorder(lineBorder, margin));
         JButton resetButton = new JButton("↻");
