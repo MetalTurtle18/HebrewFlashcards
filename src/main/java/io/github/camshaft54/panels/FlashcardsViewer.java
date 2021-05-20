@@ -1,5 +1,8 @@
 package io.github.camshaft54.panels;
 
+import io.github.camshaft54.ChineseFlashcards;
+import io.github.camshaft54.utils.Set;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -17,16 +20,18 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
 
     private final JPanel flashcardPanel;
     private final CardLayout cardLayout;
+    private final ArrayList<Flashcard> flashcards;
     private JLabel cardCounter;
     private JButton leftButton;
     private JButton rightButton;
-    private final ArrayList<Flashcard> flashcards = new ArrayList<>();
-    private int currentFlashcard = 0;
+    private JButton starButton;
+    private int currentFlashcard;
     private int termType;
     private int definitionType;
 
-    public FlashcardsViewer() {
-        isVisible = true; // TODO: Implement this
+    public FlashcardsViewer(Set selectedSet) {
+        currentFlashcard = 0;
+        isVisible = true;
         termType = Flashcard.CHINESE;
         definitionType = Flashcard.ENGLISH;
 
@@ -43,33 +48,41 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         add(flashcardPanel, BorderLayout.CENTER);
 
         // Add all of the flashcards panels to the inner flashcard panel
+        flashcards = new ArrayList<>();
         AtomicInteger i = new AtomicInteger();
-        WelcomePanel.selectedSet.getCards().forEach(card -> {
+        selectedSet.getCards().forEach(card -> {
             flashcards.add(new Flashcard(card, termType));
             flashcardPanel.add(flashcards.get(flashcards.size()-1), i.get());
             i.getAndAdd(1);
         });
 
-        // Add toolbar
-        addToolbar();
+        // Add toolbars
+        addToolbars();
 
         // Register keyboard shortcuts
         registerShortcuts();
     }
 
-    private void addToolbar() {
-        // Create previous and next buttons for flashcards and card counter
-        leftButton = new JButton("<");
-        leftButton.addActionListener(this);
-        leftButton.setEnabled(false);
-        rightButton = new JButton(">");
-        rightButton.addActionListener(this);
+    private void addToolbars() {
+        // Create previous and next buttons for flashcards, card counter, and reset button
         cardCounter = new JLabel((currentFlashcard + 1) + " / " + flashcards.size());
         Border lineBorder = BorderFactory.createLineBorder(Color.WHITE, 2);
         Border margin = new EmptyBorder(5, 5, 5, 5);
         cardCounter.setBorder(new CompoundBorder(lineBorder, margin));
         JButton resetButton = new JButton("↻");
         resetButton.addActionListener(this);
+        leftButton = new JButton("<");
+        leftButton.addActionListener(this);
+        leftButton.setEnabled(false);
+        rightButton = new JButton(">");
+        rightButton.addActionListener(this);
+        rightButton.setEnabled(flashcards.size() != 1);
+        if (!flashcards.get(currentFlashcard).hasStar(termType, definitionType)) {
+            starButton = new JButton("☆");
+        } else {
+            starButton = new JButton("★");
+        }
+        starButton.addActionListener(this);
 
 
         JComboBox<String> termSelector = new JComboBox<>(new String[]{"Chinese", "Pinyin", "English"});
@@ -80,22 +93,35 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         definitionSelector.setName("definitionSelector");
         definitionSelector.addActionListener(this);
 
-        // Create and add toolbar JPanel
-        JPanel toolbar = new JPanel();
-        toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
-        toolbar.setBorder(new EmptyBorder(0, 10, 10, 10));
-        toolbar.add(cardCounter);
-        toolbar.add(Box.createHorizontalStrut(5));
-        toolbar.add(resetButton);
-        toolbar.add(Box.createHorizontalStrut(10));
-        toolbar.add(leftButton);
-        toolbar.add(Box.createHorizontalStrut(5));
-        toolbar.add(rightButton);
-        toolbar.add(Box.createHorizontalStrut(10));
-        toolbar.add(termSelector);
-        toolbar.add(new JLabel("->"));
-        toolbar.add(definitionSelector);
-        add(toolbar, BorderLayout.SOUTH);
+        // Create and add bottom toolbar
+        JPanel bottomToolbar = new JPanel();
+        bottomToolbar.setLayout(new BoxLayout(bottomToolbar, BoxLayout.X_AXIS));
+        bottomToolbar.setBorder(new EmptyBorder(0, 10, 10, 10));
+        bottomToolbar.add(cardCounter);
+        bottomToolbar.add(Box.createHorizontalStrut(5));
+        bottomToolbar.add(resetButton);
+        bottomToolbar.add(Box.createHorizontalStrut(10));
+        bottomToolbar.add(leftButton);
+        bottomToolbar.add(Box.createHorizontalStrut(5));
+        bottomToolbar.add(rightButton);
+        bottomToolbar.add(Box.createHorizontalStrut(10));
+        bottomToolbar.add(starButton);
+        bottomToolbar.add(Box.createHorizontalStrut(10));
+        bottomToolbar.add(termSelector);
+        bottomToolbar.add(new JLabel("->"));
+        bottomToolbar.add(definitionSelector);
+        add(bottomToolbar, BorderLayout.SOUTH);
+
+        // Create buttons for top toolbar
+        JButton exitButton = new JButton("Back");
+        exitButton.addActionListener(this);
+
+        // Create and add top toolbar
+        JPanel topToolbar = new JPanel();
+        topToolbar.setLayout(new BoxLayout(topToolbar, BoxLayout.X_AXIS));
+        topToolbar.setBorder(new EmptyBorder(10, 10, 0, 10));
+        topToolbar.add(exitButton);
+        add(topToolbar, BorderLayout.NORTH);
     }
 
     private void registerShortcuts() {
@@ -108,15 +134,17 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         map.put(KeyStroke.getKeyStroke("DOWN"), "flip");
         Action keyAction = new AbstractAction() {
             public void actionPerformed(ActionEvent actionEvent) {
-                if (actionEvent.getSource() instanceof JPanel) {
-                    flipFlashcard();
-                    return;
-                }
-                String actionCommand = ((JButton) actionEvent.getSource()).getText();
-                if (actionCommand.equals("<")) {
-                    decrementFlashcard();
-                } else if (actionCommand.equals(">")) {
-                    incrementFlashcard();
+                if (isVisible) {
+                    if (actionEvent.getSource() instanceof JPanel) {
+                        flipFlashcard();
+                        return;
+                    }
+                    String actionCommand = ((JButton) actionEvent.getSource()).getText();
+                    if (actionCommand.equals("<")) {
+                        decrementFlashcard();
+                    } else if (actionCommand.equals(">")) {
+                        incrementFlashcard();
+                    }
                 }
             }
         };
@@ -128,19 +156,25 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
     public void incrementFlashcard() {
         cardLayout.next(flashcardPanel);
         currentFlashcard++;
-        flashcards.get(currentFlashcard).showSide(termType);
-        rightButton.setEnabled(currentFlashcard < flashcards.size() - 1);
-        leftButton.setEnabled(currentFlashcard > 0);
-        cardCounter.setText((currentFlashcard + 1) + " / " + flashcards.size());
+        refreshFlashcard();
     }
 
     public void decrementFlashcard() {
         cardLayout.previous(flashcardPanel);
         currentFlashcard--;
+        refreshFlashcard();
+    }
+
+    public void refreshFlashcard() {
         flashcards.get(currentFlashcard).showSide(termType);
-        rightButton.setEnabled(currentFlashcard < flashcards.size() - 1);
+        rightButton.setEnabled(currentFlashcard < flashcards.size() - 1 && flashcards.size() != 1);
         leftButton.setEnabled(currentFlashcard > 0);
         cardCounter.setText((currentFlashcard + 1) + " / " + flashcards.size());
+        if (!flashcards.get(currentFlashcard).hasStar(termType, definitionType)) {
+            starButton.setText("☆");
+        } else {
+            starButton.setText("★");
+        }
     }
 
     public void resetFlashcards() {
@@ -148,8 +182,13 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         currentFlashcard = 0;
         flashcards.get(currentFlashcard).showSide(termType);
         leftButton.setEnabled(false);
-        rightButton.setEnabled(currentFlashcard < flashcards.size() - 1);
+        rightButton.setEnabled(currentFlashcard < flashcards.size() - 1 && flashcards.size() != 1);
         cardCounter.setText("1 / " + flashcards.size());
+        if (!flashcards.get(currentFlashcard).hasStar(termType, definitionType)) {
+            starButton.setText("☆");
+        } else {
+            starButton.setText("★");
+        }
     }
 
     public void flipFlashcard() {
@@ -160,6 +199,16 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         }
     }
 
+    public void toggleStar() {
+        if (!flashcards.get(currentFlashcard).hasStar(termType, definitionType)) {
+            flashcards.get(currentFlashcard).setStar(termType, definitionType);
+            starButton.setText("★");
+        } else {
+            flashcards.get(currentFlashcard).removeStar(termType, definitionType);
+            starButton.setText("☆");
+        }
+    }
+
     public void updateTerm(String termType) {
         switch (termType) {
             case "English" -> this.termType = Flashcard.ENGLISH;
@@ -167,6 +216,11 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
             case "Chinese" -> this.termType = Flashcard.CHINESE;
         }
         flashcards.get(currentFlashcard).showSide(this.termType);
+        if (!flashcards.get(currentFlashcard).hasStar(this.termType, definitionType)) {
+            starButton.setText("☆");
+        } else {
+            starButton.setText("★");
+        }
     }
 
     public void updateDefinition(String definitionType) {
@@ -175,10 +229,15 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
             case "Pinyin" -> this.definitionType = Flashcard.PINYIN;
             case "Chinese" -> this.definitionType = Flashcard.CHINESE;
         }
-        flashcards.get(currentFlashcard).showSide(this.termType);
+        flashcards.get(currentFlashcard).showSide(termType);
+        if (!flashcards.get(currentFlashcard).hasStar(termType, this.definitionType)) {
+            starButton.setText("☆");
+        } else {
+            starButton.setText("★");
+        }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "ConstantConditions"})
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JComboBox && ((JComboBox) e.getSource()).getSelectedItem() != null) {
@@ -191,6 +250,8 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
             case "<" -> decrementFlashcard();
             case ">" -> incrementFlashcard();
             case "↻" -> resetFlashcards();
+            case "☆", "★" -> toggleStar();
+            case "Back" -> ChineseFlashcards.mainWindow.showWelcomePanel();
         }
     }
 

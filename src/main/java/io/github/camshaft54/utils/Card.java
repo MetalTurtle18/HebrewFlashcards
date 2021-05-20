@@ -1,11 +1,22 @@
 package io.github.camshaft54.utils;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Card {
+    private ArrayList<String> stars = new ArrayList<>();
     private String chinese;
     private String pinyin;
     private String english;
+
+    public ArrayList<String> getStars() {
+        return stars;
+    }
+
+    @SuppressWarnings("unused")
+    public void setStars(ArrayList<String> stars) {
+        this.stars = stars;
+    }
 
     public String getChinese() {
         return chinese;

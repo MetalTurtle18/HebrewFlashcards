@@ -8,9 +8,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 
 public class WelcomePanel extends JPanel implements ActionListener {
-    public static Set selectedSet;
+    private boolean useStarredCards;
+    private final JComboBox<String> setMenu;
 
     public WelcomePanel() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -28,15 +30,15 @@ public class WelcomePanel extends JPanel implements ActionListener {
 
         String[] setMenuOptions = new String[ChineseFlashcards.sets.size()];
         for (int i = 0; i < setMenuOptions.length; i++) {
-            if (i == 0) {
-                selectedSet = ChineseFlashcards.sets.get(i);
-            }
             setMenuOptions[i] = ChineseFlashcards.sets.get(i).getName();
         }
-        JComboBox<String> setMenu = new JComboBox<>(setMenuOptions);
+        setMenu = new JComboBox<>(setMenuOptions);
         setMenu.setMaximumSize(new Dimension(175, 30));
         setMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
         setMenu.addActionListener(this);
+
+        JCheckBox showStarredCards = new JCheckBox("Starred Cards");
+        showStarredCards.addItemListener(e -> useStarredCards = e.getStateChange() == ItemEvent.SELECTED);
 
         JButton startButton = new JButton("Start");
         startButton.setFont(Card.getEnglishFont(20));
@@ -49,16 +51,24 @@ public class WelcomePanel extends JPanel implements ActionListener {
         add(setMenuInfo);
         add(setMenu);
         add(Box.createVerticalStrut(10));
+        add(showStarredCards);
+        add(Box.createVerticalStrut(10));
         add(startButton);
     }
 
     @SuppressWarnings("rawtypes")
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof JComboBox) {
-            selectedSet = ChineseFlashcards.sets.get(((JComboBox) e.getSource()).getSelectedIndex());
-        } else if (e.getActionCommand().equals("Start")) {
-            ChineseFlashcards.mainWindow.showFlashcardPanel();
+        if (e.getActionCommand().equals("Start")) {
+            Set selectedSet = ChineseFlashcards.sets.get(setMenu.getSelectedIndex());
+            if (useStarredCards) {
+                selectedSet = Set.getStarredSet(selectedSet);
+                if (selectedSet.getCards().size() == 0) {
+                    JOptionPane.showMessageDialog(this, "You have no starred cards for this set!", "No Starred Cards", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+            ChineseFlashcards.mainWindow.showFlashcardPanel(selectedSet, useStarredCards);
         }
     }
 }

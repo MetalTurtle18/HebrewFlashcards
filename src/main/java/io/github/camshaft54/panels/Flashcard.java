@@ -9,9 +9,9 @@ public class Flashcard extends JPanel {
     public static int ENGLISH = 0;
     public static int PINYIN = 1;
     public static int CHINESE = 2;
-    Card card;
-    JLabel label;
-    int side;
+    private final Card card;
+    private final JLabel label;
+    private int side;
 
     public Flashcard(Card card, int firstSide) {
         this.card = card;
@@ -57,7 +57,19 @@ public class Flashcard extends JPanel {
         return side;
     }
 
-    public static Flashcard getEndFlashcard() {
-        return new Flashcard(Card.createCard("End of Set", "End of Set", "End of Set"), ENGLISH);
+    public void setStar(int term, int definition) {
+        if (!hasStar(term, definition)) {
+            card.getStars().add(term + " " + definition);
+        }
+    }
+
+    public boolean hasStar(int term, int definition) {
+        return card.getStars().contains(term + " " + definition);
+    }
+
+    public void removeStar(int term, int definition) {
+        if (hasStar(term, definition)) {
+            card.getStars().remove(term + " " + definition);
+        }
     }
 }

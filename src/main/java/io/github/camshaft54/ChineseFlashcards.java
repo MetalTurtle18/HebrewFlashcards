@@ -11,11 +11,14 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class ChineseFlashcards {
     public static MainWindow mainWindow;
     public static ArrayList<Set> sets;
+    public static ArrayList<String> setFiles;
     public static Yaml yaml;
 
     public static void main(String[] args) {
@@ -25,7 +28,17 @@ public class ChineseFlashcards {
         setConstructor.addTypeDescription(setDescription);
         yaml = new Yaml(setConstructor);
         sets = new ArrayList<>();
-        getListOfSets("sets");
+        populateSetList("sets");
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                for (int i = 0; i < sets.size(); i++) {
+                    yaml.dump(sets.get(i), new FileWriter("sets/" + setFiles.get(i)));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
 
         SwingUtilities.invokeLater(() -> {
             try {
@@ -51,10 +64,11 @@ public class ChineseFlashcards {
         yaml.dump(cards, new FileWriter(outputFilename));
     }
 
-    public static void getListOfSets(String directory) {
+    public static void populateSetList(String directory) {
         File dir = new File(directory);
         String[] files = dir.list((dir1, name) -> name.endsWith(".yaml") || name.endsWith(".yml"));
         if (files != null) {
+            setFiles = (ArrayList<String>) Arrays.stream(files).collect(Collectors.toList());
             for (String name : files) {
                 try {
                     FileInputStream fs = new FileInputStream("sets/" + name);
