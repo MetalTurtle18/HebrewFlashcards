@@ -9,13 +9,16 @@ import io.github.camshaft54.utils.Set;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 public class MainWindow extends JFrame {
     private final JPanel root;
     private final CardLayout cardLayout;
+    private WelcomePanel welcomePanel;
+    private EditorPanel editorPanel;
+    private FlashcardsViewer flashcardsViewer;
+    private StarFlashcardsViewer starFlashcardsViewer;
 
     public MainWindow() throws HeadlessException {
         setTitle("CFS");
@@ -34,27 +37,42 @@ public class MainWindow extends JFrame {
         cardLayout = (CardLayout) root.getLayout();
         add(root);
 
-        WelcomePanel welcomePanel = new WelcomePanel();
+        welcomePanel = new WelcomePanel();
         root.add(welcomePanel, "welcome");
     }
 
     public void showFlashcardPanel(Set selectedSet, boolean isStarredSet) {
-        if (!isStarredSet) {
-            FlashcardsViewer flashcardsViewer = new FlashcardsViewer(selectedSet);
-            root.add(flashcardsViewer, "flashcards");
-        } else {
-            StarFlashcardsViewer starFlashcardsViewer = new StarFlashcardsViewer(selectedSet);
-            root.add(starFlashcardsViewer, "flashcards");
+        if (flashcardsViewer != null) {
+            root.remove(flashcardsViewer);
         }
-        cardLayout.show(root, "flashcards");
+        if (starFlashcardsViewer != null) {
+            root.remove(starFlashcardsViewer);
+        }
+        if (!isStarredSet) {
+            flashcardsViewer = new FlashcardsViewer(selectedSet);
+            root.add(flashcardsViewer, "flashcards");
+            cardLayout.show(root, "flashcards");
+        } else {
+            starFlashcardsViewer = new StarFlashcardsViewer(selectedSet);
+            root.add(starFlashcardsViewer, "starFlashcards");
+            cardLayout.show(root, "starFlashcards");
+        }
     }
 
     public void showWelcomePanel() {
-        cardLayout.first(root);
+        if (welcomePanel != null) {
+            root.remove(welcomePanel);
+        }
+        welcomePanel = new WelcomePanel();
+        root.add(welcomePanel, "welcome");
+        cardLayout.show(root, "welcome");
     }
 
     public void showEditorPanel() {
-        EditorPanel editorPanel = new EditorPanel();
+        if (editorPanel != null) {
+            root.remove(editorPanel);
+        }
+        editorPanel = new EditorPanel();
         root.add(editorPanel, "editor");
         cardLayout.show(root, "editor");
     }

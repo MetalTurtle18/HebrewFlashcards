@@ -1,21 +1,30 @@
 package io.github.camshaft54.panels;
 
 import io.github.camshaft54.ChineseFlashcards;
+import io.github.camshaft54.utils.Card;
+import io.github.camshaft54.utils.Set;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class EditorPanel extends JPanel implements ActionListener {
     JPanel editor;
-    ArrayList<JPanel> cards;
+    JScrollPane scrollPane;
+    JButton saveButton;
+    HashMap<Integer, JPanel> cards;
+    int idTracker = 0;
 
     public EditorPanel() throws HeadlessException {
-        cards = new ArrayList<>();
+        cards = new HashMap<>();
 
         setLayout(new BorderLayout());
         JPanel toolbar = new JPanel();
@@ -25,47 +34,93 @@ public class EditorPanel extends JPanel implements ActionListener {
         exitButton.addActionListener(this);
         JButton newCardButton = new JButton("New Card");
         newCardButton.addActionListener(this);
+        saveButton = new JButton("Save");
+        saveButton.addActionListener(this);
         toolbar.add(exitButton);
+        toolbar.add(Box.createHorizontalStrut(10));
         toolbar.add(newCardButton);
+        toolbar.add(Box.createHorizontalStrut(10));
+        toolbar.add(saveButton);
         add(toolbar, BorderLayout.NORTH);
 
         editor = new JPanel();
         editor.setLayout(new BoxLayout(editor, BoxLayout.Y_AXIS));
-        JScrollPane editorScrollPane = new JScrollPane(editor);
-        add(editorScrollPane, BorderLayout.CENTER);
+        scrollPane = new JScrollPane(editor);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+        add(scrollPane, BorderLayout.CENTER);
         addNewCard();
     }
 
     private void addNewCard() {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBorder(new LineBorder(new Color(192, 192, 192), 2));
+        card.setBorder(new CompoundBorder(new LineBorder(new Color(192, 192, 192), 2), new EmptyBorder(10, 10, 10, 10)));
 
-        JPanel chinesePanel = new JPanel();
-        JTextField chineseTextField = new JTextField("你好", 20);
-        chinesePanel.add(new JLabel("Chinese:"));
-        chinesePanel.add(chineseTextField);
-        chinesePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        Box chineseBox = new Box(BoxLayout.X_AXIS);
+        JTextField chineseTextField = new JTextField(20);
+        chineseTextField.setMaximumSize(chineseTextField.getPreferredSize());
+        JButton deleteButton = new JButton("x");
+        deleteButton.setActionCommand("x " + idTracker);
+        deleteButton.addActionListener(this);
+        chineseBox.add(new JLabel("Chinese:"));
+        chineseBox.add(Box.createHorizontalStrut(5));
+        chineseBox.add(chineseTextField);
+        chineseBox.add(Box.createHorizontalGlue());
+        chineseBox.add(deleteButton);
 
-        JPanel pinyinPanel = new JPanel();
-        JTextField pinyinTextField = new JTextField("nihao", 20);
-        pinyinPanel.add(new JLabel("Pinyin:"));
-        pinyinPanel.add(pinyinTextField);
-        pinyinPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        Box pinyinBox = new Box(BoxLayout.X_AXIS);
+        JTextField pinyinTextField = new JTextField(20);
+        pinyinTextField.setMaximumSize(pinyinTextField.getPreferredSize());
+        JButton genPinyinButton = new JButton("Generate Pinyin from Chinese");
+        genPinyinButton.setActionCommand("genPinyin " + idTracker);
+        genPinyinButton.addActionListener(this);
+        pinyinBox.add(new JLabel("Pinyin:"));
+        pinyinBox.add(Box.createHorizontalStrut(14));
+        pinyinBox.add(pinyinTextField);
+        pinyinBox.add(Box.createHorizontalGlue());
 
-        JPanel englishPanel = new JPanel();
-        JTextField englishTextField = new JTextField("hello", 20);
-        englishPanel.add(new JLabel("English:"));
-        englishPanel.add(englishTextField);
-        englishPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        Box englishBox = new Box(BoxLayout.X_AXIS);
+        JTextField englishTextField = new JTextField(20);
+        englishTextField.setMaximumSize(englishTextField.getPreferredSize());
+        englishBox.add(new JLabel("English:"));
+        englishBox.add(Box.createHorizontalStrut(8));
+        englishBox.add(englishTextField);
+        englishBox.add(Box.createHorizontalGlue());
 
-        card.add(chinesePanel, 0);
-        card.add(pinyinPanel, 1);
-        card.add(englishPanel, 2);
+        card.add(chineseBox);
+        card.add(Box.createVerticalStrut(5));
+        card.add(pinyinBox);
+        card.add(Box.createVerticalStrut(5));
+        card.add(englishBox);
+        card.add(Box.createVerticalStrut(5));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int) card.getPreferredSize().getHeight()));
         editor.add(card);
-        cards.add(card);
-        editor.add(Box.createVerticalStrut(5));
+        cards.put(idTracker, card);
+        scrollPane.revalidate();
+        idTracker++;
+    }
+
+    private void saveSet(String name) {
+        Set set = new Set();
+        set.setName(name);
+        ArrayList<Card> cards = set.getCards();
+        for (HashMap.Entry<Integer, JPanel> entry : this.cards.entrySet()) {
+            JPanel panel = entry.getValue();
+            String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
+            String pinyin = ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).getText();
+            String english = ((JTextField) ((Box) panel.getComponent(4)).getComponent(2)).getText();
+            Card card = new Card();
+            card.setChinese(chinese);
+            card.setPinyin(pinyin);
+            card.setEnglish(english);
+            cards.add(card);
+        }
+        try {
+            ChineseFlashcards.yaml.dump(set, new FileWriter("sets/" + name + ".yaml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ChineseFlashcards.mainWindow.showWelcomePanel();
     }
 
     @Override
@@ -73,8 +128,39 @@ public class EditorPanel extends JPanel implements ActionListener {
         if (e.getActionCommand().equals("Exit")) {
             ChineseFlashcards.mainWindow.showWelcomePanel();
         } else if (e.getActionCommand().equals("New Card")) {
-            System.out.println(e.getActionCommand());
             addNewCard();
+            saveButton.setEnabled(cards.size() != 0);
+        } else if (e.getActionCommand().startsWith("x ")) {
+            int index = Integer.parseInt(e.getActionCommand().replace("x ", ""));
+            editor.remove(cards.get(index));
+            scrollPane.revalidate();
+            scrollPane.repaint();
+            cards.remove(index);
+            saveButton.setEnabled(cards.size() != 0);
+        } else if (e.getActionCommand().equals("Save")) {
+            String proposedName = "";
+            while (proposedName != null) {
+                proposedName = JOptionPane.showInputDialog("Enter a name for this set:");
+                if (proposedName != null && !proposedName.trim().equals("")) {
+                    if (!proposedName.trim().equals("")) {
+                        for (Set set : ChineseFlashcards.sets) {
+                            if (!set.getName().equals(proposedName.trim())) {
+                                saveSet(proposedName.trim());
+                                JOptionPane.showMessageDialog(this, "Saved \"" + proposedName.trim() + "\" to file!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                return;
+                            }
+                        }
+                    }
+                } else if (proposedName != null) {
+                    JOptionPane.showMessageDialog(this, "Invalid Set Name! please try again", "Invalid Name", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        } else if (e.getActionCommand().startsWith("genPinyin ")) {
+            JPanel panel = cards.get(Integer.parseInt(e.getActionCommand().replace("genPinyin ", "")));
+            String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
+            if (!chinese.equals("")) {
+                ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).setText(ChineseFlashcards.dict.get(chinese).getPinyin());
+            }
         }
     }
 }

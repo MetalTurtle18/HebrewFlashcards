@@ -15,6 +15,8 @@ public class WelcomePanel extends JPanel implements ActionListener {
     private final JComboBox<String> setMenu;
 
     public WelcomePanel() {
+        ChineseFlashcards.populateSetList("sets");
+
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JLabel welcomeText1 = new JLabel("Welcome to the");
