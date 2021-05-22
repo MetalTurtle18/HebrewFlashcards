@@ -1,9 +1,6 @@
 package io.github.camshaft54.windows;
 
-import io.github.camshaft54.panels.EditorPanel;
-import io.github.camshaft54.panels.FlashcardsViewer;
-import io.github.camshaft54.panels.StarFlashcardsViewer;
-import io.github.camshaft54.panels.WelcomePanel;
+import io.github.camshaft54.panels.*;
 import io.github.camshaft54.utils.Set;
 
 import javax.imageio.ImageIO;
@@ -19,6 +16,7 @@ public class MainWindow extends JFrame {
     private EditorPanel editorPanel;
     private FlashcardsViewer flashcardsViewer;
     private StarFlashcardsViewer starFlashcardsViewer;
+    private ImportPanel importPanel;
 
     public MainWindow() throws HeadlessException {
         setTitle("CFS");
@@ -75,5 +73,23 @@ public class MainWindow extends JFrame {
         editorPanel = new EditorPanel();
         root.add(editorPanel, "editor");
         cardLayout.show(root, "editor");
+    }
+
+    public void showEditorPanel(Set set) {
+        if (editorPanel != null) {
+            root.remove(editorPanel);
+        }
+        editorPanel = new EditorPanel(set);
+        root.add(editorPanel, "editor");
+        cardLayout.show(root, "editor");
+    }
+
+    public void showImportPanel() {
+        if (importPanel != null) {
+            root.remove(importPanel);
+        }
+        importPanel = new ImportPanel();
+        root.add(importPanel, "import");
+        cardLayout.show(root, "import");
     }
 }

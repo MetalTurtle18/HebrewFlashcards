@@ -20,6 +20,7 @@ public class EditorPanel extends JPanel implements ActionListener {
     JPanel editor;
     JScrollPane scrollPane;
     JButton saveButton;
+    JLabel cardCounter;
     HashMap<Integer, JPanel> cards;
     int idTracker = 0;
 
@@ -27,6 +28,29 @@ public class EditorPanel extends JPanel implements ActionListener {
         cards = new HashMap<>();
 
         setLayout(new BorderLayout());
+
+        setupToolbarAndScrollPane();
+
+        add(scrollPane, BorderLayout.CENTER);
+        addNewCard();
+    }
+
+    public EditorPanel(Set selectedSet) {
+        cards = new HashMap<>();
+
+        setLayout(new BorderLayout());
+        setupToolbarAndScrollPane();
+        for (int i = 0; i < selectedSet.getCards().size(); i++) {
+            addNewCard();
+            Card currCard = selectedSet.getCards().get(i);
+            JPanel cardPanel = cards.get(cards.size()-1);
+            ((JTextField) ((Box) cardPanel.getComponent(0)).getComponent(2)).setText(currCard.getChinese());
+            ((JTextField) ((Box) cardPanel.getComponent(2)).getComponent(2)).setText(currCard.getPinyin());
+            ((JTextField) ((Box) cardPanel.getComponent(4)).getComponent(2)).setText(currCard.getEnglish());
+        }
+    }
+
+    private void setupToolbarAndScrollPane() {
         JPanel toolbar = new JPanel();
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
         toolbar.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -36,11 +60,14 @@ public class EditorPanel extends JPanel implements ActionListener {
         newCardButton.addActionListener(this);
         saveButton = new JButton("Save");
         saveButton.addActionListener(this);
+        cardCounter = new JLabel("1 Card");
         toolbar.add(exitButton);
         toolbar.add(Box.createHorizontalStrut(10));
         toolbar.add(newCardButton);
         toolbar.add(Box.createHorizontalStrut(10));
         toolbar.add(saveButton);
+        toolbar.add(Box.createHorizontalGlue());
+        toolbar.add(cardCounter);
         add(toolbar, BorderLayout.NORTH);
 
         editor = new JPanel();
@@ -48,7 +75,6 @@ public class EditorPanel extends JPanel implements ActionListener {
         scrollPane = new JScrollPane(editor);
         scrollPane.getVerticalScrollBar().setUnitIncrement(10);
         add(scrollPane, BorderLayout.CENTER);
-        addNewCard();
     }
 
     private void addNewCard() {
@@ -59,7 +85,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         Box chineseBox = new Box(BoxLayout.X_AXIS);
         JTextField chineseTextField = new JTextField(20);
         chineseTextField.setMaximumSize(chineseTextField.getPreferredSize());
-        JButton deleteButton = new JButton("x");
+        JButton deleteButton = new JButton("✕");
         deleteButton.setActionCommand("x " + idTracker);
         deleteButton.addActionListener(this);
         chineseBox.add(new JLabel("Chinese:"));
@@ -78,14 +104,19 @@ public class EditorPanel extends JPanel implements ActionListener {
         pinyinBox.add(Box.createHorizontalStrut(14));
         pinyinBox.add(pinyinTextField);
         pinyinBox.add(Box.createHorizontalGlue());
+        pinyinBox.add(genPinyinButton);
 
         Box englishBox = new Box(BoxLayout.X_AXIS);
         JTextField englishTextField = new JTextField(20);
         englishTextField.setMaximumSize(englishTextField.getPreferredSize());
+        JButton genEnglishButton = new JButton("Generate English from Chinese");
+        genEnglishButton.setActionCommand("genEnglish " + idTracker);
+        genEnglishButton.addActionListener(this);
         englishBox.add(new JLabel("English:"));
         englishBox.add(Box.createHorizontalStrut(8));
         englishBox.add(englishTextField);
         englishBox.add(Box.createHorizontalGlue());
+        englishBox.add(genEnglishButton);
 
         card.add(chineseBox);
         card.add(Box.createVerticalStrut(5));
@@ -98,6 +129,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         cards.put(idTracker, card);
         scrollPane.revalidate();
         idTracker++;
+        cardCounter.setText(cards.size() + " card" + ((cards.size() != 1) ? "s" : ""));
     }
 
     private void saveSet(String name) {
@@ -159,7 +191,17 @@ public class EditorPanel extends JPanel implements ActionListener {
             JPanel panel = cards.get(Integer.parseInt(e.getActionCommand().replace("genPinyin ", "")));
             String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
             if (!chinese.equals("")) {
-                ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).setText(ChineseFlashcards.dict.get(chinese).getPinyin());
+                try {
+                    ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).setText(ChineseFlashcards.dict.get(chinese).getPinyin());
+                } catch (Exception ignored) { }
+            }
+        } else if (e.getActionCommand().startsWith("genEnglish ")) {
+            JPanel panel = cards.get(Integer.parseInt(e.getActionCommand().replace("genEnglish ", "")));
+            String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
+            if (!chinese.equals("")) {
+                try {
+                    ((JTextField) ((Box) panel.getComponent(4)).getComponent(2)).setText(ChineseFlashcards.dict.get(chinese).getEnglish());
+                } catch (Exception ignored) { }
             }
         }
     }

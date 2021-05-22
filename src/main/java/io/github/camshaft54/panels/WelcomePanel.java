@@ -17,7 +17,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
     public WelcomePanel() {
         ChineseFlashcards.populateSetList("sets");
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JLabel welcomeText1 = new JLabel("Welcome to the");
         Font welcomeFont = new Font("Arial Nova", Font.PLAIN, 38);
@@ -44,6 +44,11 @@ public class WelcomePanel extends JPanel implements ActionListener {
         setMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
         setMenu.addActionListener(this);
 
+        JButton editButton = new JButton("Edit Selected Set");
+        editButton.setFont(new Font("Arial Nova", Font.PLAIN, 10));
+        editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        editButton.addActionListener(this);
+
         JCheckBox showStarredCards = new JCheckBox("Starred Cards");
         showStarredCards.addItemListener(e -> useStarredCards = e.getStateChange() == ItemEvent.SELECTED);
         showStarredCards.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -58,6 +63,11 @@ public class WelcomePanel extends JPanel implements ActionListener {
         newButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         newButton.addActionListener(this);
 
+        JButton importButton = new JButton("Import");
+        importButton.setFont(Card.getEnglishFont(20));
+        importButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        importButton.addActionListener(this);
+
         if (setMenuOptions.length == 0) {
             setMenu.setEnabled(false);
             showStarredCards.setEnabled(false);
@@ -69,29 +79,41 @@ public class WelcomePanel extends JPanel implements ActionListener {
         add(Box.createVerticalStrut(10));
         add(setMenuInfo);
         add(setMenu);
+        add(Box.createVerticalStrut(5));
+        add(editButton);
         add(Box.createVerticalStrut(10));
         add(showStarredCards);
         add(Box.createVerticalStrut(10));
         add(startButton);
         add(Box.createVerticalStrut(10));
         add(newButton);
+        add(Box.createVerticalStrut(10));
+        add(importButton);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("Start")) {
-            Set selectedSet = ChineseFlashcards.sets.get(setMenu.getSelectedIndex());
-            if (useStarredCards) {
-                selectedSet = Set.getStarredSet(selectedSet);
-                if (selectedSet.getCards().size() == 0) {
-                    JOptionPane.showMessageDialog(this, "You have no starred cards for this set!", "No Starred Cards", JOptionPane.WARNING_MESSAGE);
-                    return;
+        switch (e.getActionCommand()) {
+            case "Start":
+                Set selectedSet = ChineseFlashcards.sets.get(setMenu.getSelectedIndex());
+                if (useStarredCards) {
+                    selectedSet = Set.getStarredSet(selectedSet);
+                    if (selectedSet.getCards().size() == 0) {
+                        JOptionPane.showMessageDialog(this, "You have no starred cards for this set!", "No Starred Cards", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
                 }
-            }
-            ChineseFlashcards.mainWindow.showFlashcardPanel(selectedSet, useStarredCards);
-        } else if (e.getActionCommand().equals("New")) {
-            ChineseFlashcards.mainWindow.showEditorPanel();
+                ChineseFlashcards.mainWindow.showFlashcardPanel(selectedSet, useStarredCards);
+                break;
+            case "New":
+                ChineseFlashcards.mainWindow.showEditorPanel();
+                break;
+            case "Edit Selected Set":
+                ChineseFlashcards.mainWindow.showEditorPanel(ChineseFlashcards.sets.get(setMenu.getSelectedIndex()));
+                break;
+            case "Import":
+                ChineseFlashcards.mainWindow.showImportPanel();
+                break;
         }
     }
 }

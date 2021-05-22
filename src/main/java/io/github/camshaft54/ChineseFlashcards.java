@@ -108,7 +108,7 @@ public class ChineseFlashcards {
                 count++;
                 String line = scan.nextLine();
                 if (count < 32) {
-                    break;
+                    continue;
                 }
                 String[] lineArr = line.split(" ");
                 String traditional = lineArr[0];
@@ -116,9 +116,8 @@ public class ChineseFlashcards {
                 String pinyin = line.substring(line.indexOf("[") + 1, line.indexOf("]"));
                 String definition = line.substring(line.indexOf("/")+1, line.length()-1);
                 definition = definition.substring(0, (definition.contains("/")) ? definition.indexOf("/") : definition.length());
-                if (traditional.equals(simplified)) {
-                    dict.put(simplified, new DictEntry(pinyin, definition));
-                }
+                dict.put(simplified, new DictEntry(pinyin, definition));
+                dict.put(traditional, new DictEntry(pinyin, definition));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
