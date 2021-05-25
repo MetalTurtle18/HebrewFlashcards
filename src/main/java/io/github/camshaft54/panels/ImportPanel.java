@@ -1,7 +1,9 @@
 package io.github.camshaft54.panels;
 
 import io.github.camshaft54.ChineseFlashcards;
+import io.github.camshaft54.utils.Card;
 import io.github.camshaft54.utils.DndJList;
+import io.github.camshaft54.utils.Set;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -10,11 +12,17 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ImportPanel extends JPanel implements ActionListener {
     JTextArea inputTextArea;
     JTextField nameTextField;
+    JTextField firstSeparatorTextField;
+    JTextField secondSeparatorTextField;
+    JTextField cardSeparatorTextField;
 
     public ImportPanel() {
         setLayout(new BorderLayout());
@@ -46,6 +54,7 @@ public class ImportPanel extends JPanel implements ActionListener {
         DndJList dndJList = new DndJList(Arrays.asList("≡ Chinese", "≡ Pinyin", "≡ English"));
         dndJList.setAlignmentX(CENTER_ALIGNMENT);
         dndJListPanel.add(dndTitle);
+        dndJListPanel.add(Box.createRigidArea(new Dimension(0,5)));
         dndJListPanel.add(dndJList);
         dndJListPanel.add(Box.createVerticalGlue());
 
@@ -54,23 +63,26 @@ public class ImportPanel extends JPanel implements ActionListener {
         separators.setBorder(new CompoundBorder(new LineBorder(new Color(196, 196, 196), 2), new EmptyBorder(5, 5, 5, 5)));
         JLabel firstSeparatorTitle = new JLabel("Separator Between 1st and 2nd Items:");
         firstSeparatorTitle.setAlignmentX(CENTER_ALIGNMENT);
-        JTextField firstSeparatorTextField = new JTextField(10);
+        firstSeparatorTextField = new JTextField(10);
         firstSeparatorTextField.setMaximumSize(firstSeparatorTextField.getPreferredSize());
         JLabel secondSeparatorTitle = new JLabel("Separator Between 2nd and 3rd Items:");
         secondSeparatorTitle.setAlignmentX(CENTER_ALIGNMENT);
-        JTextField secondSeparatorTextField = new JTextField(10);
+        secondSeparatorTextField = new JTextField(10);
         secondSeparatorTextField.setMaximumSize(secondSeparatorTextField.getPreferredSize());
         JLabel cardSeparatorTitle = new JLabel("Separator Between Cards:");
         cardSeparatorTitle.setAlignmentX(CENTER_ALIGNMENT);
-        JTextField cardSeparatorTextField = new JTextField(10);
+        cardSeparatorTextField = new JTextField(10);
         cardSeparatorTextField.setMaximumSize(cardSeparatorTextField.getPreferredSize());
         separators.add(firstSeparatorTitle);
+        separators.add(Box.createRigidArea(new Dimension(0,2)));
         separators.add(firstSeparatorTextField);
-        separators.add(Box.createRigidArea(new Dimension(0,10)));
+        separators.add(Box.createRigidArea(new Dimension(0,7)));
         separators.add(secondSeparatorTitle);
+        separators.add(Box.createRigidArea(new Dimension(0,2)));
         separators.add(secondSeparatorTextField);
-        separators.add(Box.createRigidArea(new Dimension(0,10)));
+        separators.add(Box.createRigidArea(new Dimension(0,7)));
         separators.add(cardSeparatorTitle);
+        separators.add(Box.createRigidArea(new Dimension(0,2)));
         separators.add(cardSeparatorTextField);
 
         formatPanel.add(separators);
@@ -102,7 +114,39 @@ public class ImportPanel extends JPanel implements ActionListener {
         if (e.getActionCommand().equals("Exit")) {
             ChineseFlashcards.mainWindow.showWelcomePanel();
         } else if (e.getActionCommand().equals("Import")) {
-
+            if (nameTextField.getText().equals("") || inputTextArea.getText().equals("") ||
+                    firstSeparatorTextField.getText().equals("") || secondSeparatorTextField.getText().equals("") ||
+                    cardSeparatorTextField.getText().equals("")) {
+                JOptionPane.showMessageDialog(this, "Please make sure all text fields contain text!",
+                        "Missing Required Fields", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String[] unparsedCards = inputTextArea.getText().split(cardSeparatorTextField.getText());
+            ArrayList<Card> cards = new ArrayList<>();
+            int index = 0;
+            try {
+                for (String unparsedCard : unparsedCards) {
+                    String chinese = unparsedCard.substring(0, unparsedCard.indexOf(firstSeparatorTextField.getText()));
+                    String pinyin = unparsedCard.substring(unparsedCard.indexOf(firstSeparatorTextField.getText()) +
+                            firstSeparatorTextField.getText().length(), unparsedCard.lastIndexOf(secondSeparatorTextField.getText()));
+                    String english = unparsedCard.substring(unparsedCard.lastIndexOf(secondSeparatorTextField.getText()) +
+                            secondSeparatorTextField.getText().length());
+                    cards.add(Card.createCard(chinese, pinyin, english));
+                    index++;
+                }
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(this, "Error parsing card on line " + (index + 1) + "! Content: " + unparsedCards[index]);
+                exception.printStackTrace();
+            }
+            Set set = new Set();
+            set.setCards(cards);
+            set.setName(nameTextField.getText());
+            try {
+                ChineseFlashcards.yaml.dump(set, new FileWriter("sets/" + nameTextField.getText() + ".yaml"));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            JOptionPane.showMessageDialog(this, "Successfully imported set!", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

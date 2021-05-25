@@ -2,6 +2,7 @@ package io.github.camshaft54.utils;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +16,7 @@ public class DndJList extends JList<String> {
         this.items = items;
         myListModel = createStringListModel();
         setModel(myListModel);
+        setFont(new Font("Arial", Font.PLAIN, 20));
         MyMouseAdaptor myMouseAdaptor = new MyMouseAdaptor();
         addMouseListener(myMouseAdaptor);
         addMouseMotionListener(myMouseAdaptor);
