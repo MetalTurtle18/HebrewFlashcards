@@ -23,6 +23,7 @@ public class ImportPanel extends JPanel implements ActionListener {
     JTextField firstSeparatorTextField;
     JTextField secondSeparatorTextField;
     JTextField cardSeparatorTextField;
+    DndJList dndJList;
 
     public ImportPanel() {
         setLayout(new BorderLayout());
@@ -51,7 +52,7 @@ public class ImportPanel extends JPanel implements ActionListener {
         dndJListPanel.setLayout(new BoxLayout(dndJListPanel, BoxLayout.Y_AXIS));
         JLabel dndTitle = new JLabel("Rearrange Order of Items:");
         dndTitle.setAlignmentX(CENTER_ALIGNMENT);
-        DndJList dndJList = new DndJList(Arrays.asList("≡ Chinese", "≡ Pinyin", "≡ English"));
+        dndJList = new DndJList(Arrays.asList("≡ Chinese", "≡ Pinyin", "≡ English"));
         dndJList.setAlignmentX(CENTER_ALIGNMENT);
         dndJListPanel.add(dndTitle);
         dndJListPanel.add(Box.createRigidArea(new Dimension(0,5)));
@@ -124,19 +125,36 @@ public class ImportPanel extends JPanel implements ActionListener {
             String[] unparsedCards = inputTextArea.getText().split(cardSeparatorTextField.getText());
             ArrayList<Card> cards = new ArrayList<>();
             int index = 0;
+            int[] typeIndex = new int[3];
+            for (int i = 0; i < dndJList.getModel().getSize(); i++) {
+                String element = dndJList.getModel().getElementAt(i);
+                int type;
+                if (element.endsWith("Chinese")) {
+                    type = 0;
+                } else if (element.endsWith("Pinyin")) {
+                    type = 1;
+                } else if (element.endsWith("English")) {
+                    type = 2;
+                } else {
+                    System.out.println("Error reading from JList! Not importing...");
+                    return;
+                }
+                typeIndex[i] = type;
+            }
             try {
                 for (String unparsedCard : unparsedCards) {
-                    String chinese = unparsedCard.substring(0, unparsedCard.indexOf(firstSeparatorTextField.getText()));
-                    String pinyin = unparsedCard.substring(unparsedCard.indexOf(firstSeparatorTextField.getText()) +
+                    String[] cardParts = new String[3];
+                    cardParts[typeIndex[0]] = unparsedCard.substring(0, unparsedCard.indexOf(firstSeparatorTextField.getText()));
+                    cardParts[typeIndex[1]] = unparsedCard.substring(unparsedCard.indexOf(firstSeparatorTextField.getText()) +
                             firstSeparatorTextField.getText().length(), unparsedCard.lastIndexOf(secondSeparatorTextField.getText()));
-                    String english = unparsedCard.substring(unparsedCard.lastIndexOf(secondSeparatorTextField.getText()) +
+                    cardParts[typeIndex[2]] = unparsedCard.substring(unparsedCard.lastIndexOf(secondSeparatorTextField.getText()) +
                             secondSeparatorTextField.getText().length());
-                    cards.add(Card.createCard(chinese, pinyin, english));
+                    cards.add(Card.createCard(cardParts[0], cardParts[1], cardParts[2]));
                     index++;
                 }
             } catch (Exception exception) {
-                JOptionPane.showMessageDialog(this, "Error parsing card on line " + (index + 1) + "! Content: " + unparsedCards[index]);
-                exception.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error parsing card on line " + (index + 1) + "! Content: " + unparsedCards[index], "Parsing Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
             Set set = new Set();
             set.setCards(cards);
@@ -144,9 +162,10 @@ public class ImportPanel extends JPanel implements ActionListener {
             try {
                 ChineseFlashcards.yaml.dump(set, new FileWriter("sets/" + nameTextField.getText() + ".yaml"));
             } catch (IOException ioException) {
-                ioException.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error saving file!", "File Save Error", JOptionPane.ERROR_MESSAGE);
             }
             JOptionPane.showMessageDialog(this, "Successfully imported set!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            ChineseFlashcards.mainWindow.showWelcomePanel();
         }
     }
 }

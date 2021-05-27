@@ -12,17 +12,18 @@ import java.io.IOException;
 public class MainWindow extends JFrame {
     private final JPanel root;
     private final CardLayout cardLayout;
-    private WelcomePanel welcomePanel;
-    private EditorPanel editorPanel;
-    private FlashcardsViewer flashcardsViewer;
-    private StarFlashcardsViewer starFlashcardsViewer;
-    private ImportPanel importPanel;
+    public WelcomePanel welcomePanel;
+    public EditorPanel editorPanel;
+    public FlashcardsViewer flashcardsViewer;
+    public StarFlashcardsViewer starFlashcardsViewer;
+    public ImportPanel importPanel;
 
     public MainWindow() throws HeadlessException {
         setTitle("CFS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 425);
         setVisible(true);
+        // Set custom image as icon
         try {
             setIconImage(ImageIO.read(new File("src/main/resources/assets/CFS.png")));
         } catch (IOException e) {

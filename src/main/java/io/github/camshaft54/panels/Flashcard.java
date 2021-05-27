@@ -4,6 +4,7 @@ import io.github.camshaft54.utils.Card;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Flashcard extends JPanel {
     public static int ENGLISH = 0;
@@ -67,9 +68,38 @@ public class Flashcard extends JPanel {
         return card.getStars().contains(term + " " + definition);
     }
 
+    public boolean isStarred() {
+        return card.getStars().size() > 0;
+    }
+
     public void removeStar(int term, int definition) {
         if (hasStar(term, definition)) {
             card.getStars().remove(term + " " + definition);
+        }
+    }
+
+    public String getStarsDisplayText() {
+        ArrayList<String> displayText = new ArrayList<>();
+        card.getStars().forEach(s -> {
+            String[] star = s.split(" ");
+            displayText.add(getLangType(Integer.parseInt(star[0])) + " -> " + getLangType(Integer.parseInt(star[1])));
+        });
+        if (displayText.size() > 0) {
+            return String.join(", ", displayText);
+        } else {
+            return "None";
+        }
+    }
+
+    public String getLangType(int type) {
+        if (type == ENGLISH) {
+            return "English";
+        } else if (type == PINYIN) {
+            return "Pinyin";
+        } else if (type == CHINESE) {
+            return "Chinese";
+        } else {
+            return "Invalid";
         }
     }
 }
