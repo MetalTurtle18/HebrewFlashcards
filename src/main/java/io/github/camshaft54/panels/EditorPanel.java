@@ -11,8 +11,10 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -148,7 +150,7 @@ public class EditorPanel extends JPanel implements ActionListener {
             cards.add(card);
         }
         try {
-            ChineseFlashcards.yaml.dump(set, new FileWriter("sets/" + name + ".yaml"));
+            ChineseFlashcards.yaml.dump(set, new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + name + ".yaml"), StandardCharsets.UTF_16));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -174,14 +176,11 @@ public class EditorPanel extends JPanel implements ActionListener {
             while (proposedName != null) {
                 proposedName = JOptionPane.showInputDialog("Enter a name for this set:");
                 if (proposedName != null && !proposedName.trim().equals("")) {
-                    if (!proposedName.trim().equals("")) {
-                        for (Set set : ChineseFlashcards.sets) {
-                            if (!set.getName().equals(proposedName.trim())) {
-                                saveSet(proposedName.trim());
-                                JOptionPane.showMessageDialog(this, "Saved \"" + proposedName.trim() + "\" to file!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                                return;
-                            }
-                        }
+                    String finalProposedName = proposedName;
+                    if (!proposedName.trim().equals("") && ChineseFlashcards.sets.stream().noneMatch(set -> set.getName().equals(finalProposedName.trim()))) {
+                        saveSet(proposedName.trim());
+                        JOptionPane.showMessageDialog(this, "Saved \"" + proposedName.trim() + "\" to file!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        return;
                     }
                 } else if (proposedName != null) {
                     JOptionPane.showMessageDialog(this, "Invalid Set Name! please try again", "Invalid Name", JOptionPane.WARNING_MESSAGE);

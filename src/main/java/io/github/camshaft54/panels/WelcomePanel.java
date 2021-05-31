@@ -9,13 +9,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.net.URISyntaxException;
 
 public class WelcomePanel extends JPanel implements ActionListener {
     private boolean useStarredCards;
     private final JComboBox<String> setMenu;
 
     public WelcomePanel() {
-        ChineseFlashcards.populateSetList("sets");
+        try {
+            ChineseFlashcards.populateSetList();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -39,6 +44,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
         } else {
             setMenu = new JComboBox<>();
             setMenu.setEnabled(false);
+            setMenuInfo.setEnabled(false);
         }
         setMenu.setMaximumSize(new Dimension(175, 30));
         setMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -48,6 +54,9 @@ public class WelcomePanel extends JPanel implements ActionListener {
         editButton.setFont(new Font("Arial Nova", Font.PLAIN, 10));
         editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         editButton.addActionListener(this);
+        if (setMenuOptions.length == 0) {
+            editButton.setEnabled(false);
+        }
 
         JCheckBox showStarredCards = new JCheckBox("Starred Cards");
         showStarredCards.addItemListener(e -> useStarredCards = e.getStateChange() == ItemEvent.SELECTED);
@@ -94,7 +103,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case "Start":
+            case "Start" -> {
                 Set selectedSet = ChineseFlashcards.sets.get(setMenu.getSelectedIndex());
                 if (useStarredCards) {
                     selectedSet = Set.getStarredSet(selectedSet);
@@ -104,16 +113,10 @@ public class WelcomePanel extends JPanel implements ActionListener {
                     }
                 }
                 ChineseFlashcards.mainWindow.showFlashcardPanel(selectedSet, useStarredCards);
-                break;
-            case "New":
-                ChineseFlashcards.mainWindow.showEditorPanel();
-                break;
-            case "Edit Selected Set":
-                ChineseFlashcards.mainWindow.showEditorPanel(ChineseFlashcards.sets.get(setMenu.getSelectedIndex()));
-                break;
-            case "Import":
-                ChineseFlashcards.mainWindow.showImportPanel();
-                break;
+            }
+            case "New" -> ChineseFlashcards.mainWindow.showEditorPanel();
+            case "Edit Selected Set" -> ChineseFlashcards.mainWindow.showEditorPanel(ChineseFlashcards.sets.get(setMenu.getSelectedIndex()));
+            case "Import" -> ChineseFlashcards.mainWindow.showImportPanel();
         }
     }
 }

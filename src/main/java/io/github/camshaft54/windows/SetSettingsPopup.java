@@ -9,7 +9,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -41,7 +40,7 @@ public class SetSettingsPopup extends JFrame implements ActionListener {
         getRootPane().setBorder(new EmptyBorder(10, 10, 10, 10));
         // Set custom image as icon
         try {
-            setIconImage(ImageIO.read(new File("src/main/resources/assets/CFS.png")));
+            setIconImage(ImageIO.read(ChineseFlashcards.class.getResourceAsStream("/assets/CFS.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }

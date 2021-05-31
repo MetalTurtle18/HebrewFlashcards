@@ -12,8 +12,10 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -160,7 +162,7 @@ public class ImportPanel extends JPanel implements ActionListener {
             set.setCards(cards);
             set.setName(nameTextField.getText());
             try {
-                ChineseFlashcards.yaml.dump(set, new FileWriter("sets/" + nameTextField.getText() + ".yaml"));
+                ChineseFlashcards.yaml.dump(set, new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + nameTextField.getText() + ".yaml"), StandardCharsets.UTF_16));
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(this, "Error saving file!", "File Save Error", JOptionPane.ERROR_MESSAGE);
             }

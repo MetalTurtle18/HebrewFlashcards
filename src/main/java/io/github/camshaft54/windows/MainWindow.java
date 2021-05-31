@@ -1,12 +1,12 @@
 package io.github.camshaft54.windows;
 
+import io.github.camshaft54.ChineseFlashcards;
 import io.github.camshaft54.panels.*;
 import io.github.camshaft54.utils.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 
 public class MainWindow extends JFrame {
@@ -25,7 +25,7 @@ public class MainWindow extends JFrame {
         setVisible(true);
         // Set custom image as icon
         try {
-            setIconImage(ImageIO.read(new File("src/main/resources/assets/CFS.png")));
+            setIconImage(ImageIO.read(ChineseFlashcards.class.getResourceAsStream("/assets/CFS.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }

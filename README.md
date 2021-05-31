@@ -1,14 +1,14 @@
-# APCSChineseFlashcards
-A Java Swing flashcard application (think Quizlet) but tailored for Chinese.
+# Chinese Flashcards System (CFS)
+A Java Swing flashcard application (think [Quizlet](https://quizlet.com)) but tailored for Chinese.
 
 ### Feature Overview
-- Displays Flashcards with Pinyin, Chinese, and English
+- Display Flashcards with Pinyin, Chinese, and English
 - Term and definition can be any two of the three options
 - Ability to star cards and view the starred cards separately
-- Stores flashcards persistently in yaml files in an easy-to-read format
+- Store flashcards persistently in yaml files in an easy-to-read format
 - Keyboard shortcuts for common commands (Next: Right Arrow, Previous: Left Arrow, etc.)
 - GUI flashcard creator/editor
-  - Built-in translator and pinyin autofill
+  - Built-in English and Pinyin autofill
 - Easily remove stars from sets
 
 ### How it works
@@ -20,14 +20,14 @@ A Java Swing flashcard application (think Quizlet) but tailored for Chinese.
       new cards. Each card is a BoxLayout with JTextFields for each language type. Each card also has the option to
       autofill the Pinyin and English from the Chinese using a dictionary that is parsed when the program is run. When
       the save button is pressed, a JOptionPane is presented to the user where they can name the set. This button will
-      also save the set as a yaml file in the sets folder.
+      also save the set as a yaml file in the "sets" folder.
     - `FlashcardsViewer`: This panel uses a BorderLayout with a CardLayout in the center. Inside the CardLayout are the
       cards in the set specified by the user on the WelcomePanel. The user can click the card in the center, use the
       buttons to reset the set, go to the previous or next card, view what number card they are on in the deck, 
-      star the current card, or change the term and definition language. The user can also use the following keyboard
-      shortcuts to trigger the aforementioned actions: S: Add/Remove Star, Up/Down Arrow: Flip Card, Left Arrow: Previous Card,
-      Right Arrow: Next Card. The Keyboard shortcuts are registered using the InputMap and ActionMap, allowing them to be
-      processed in an Action.
+      star the current card, change the term and definition language, or shuffle the set. The user can also use the following
+      keyboard shortcuts to trigger the aforementioned actions: S: Add/Remove Star, Up/Down Arrow: Flip Card, Left Arrow:
+      Previous Card, Right Arrow: Next Card. The Keyboard shortcuts are registered using the InputMap and ActionMap,
+      allowing them to be processed in an Action.
     - `StarFlashcardsViewer`: This panel is the same as FlashcardsViewer with some additions. It is specifically for displaying
       the starred flashcards in a set, therefore it says what the card is starred for (e.g. Pinyin -> English). It also
       has a button to open the SetSettingsPopup, which can be used to remove stars from flashcards easily.
@@ -40,16 +40,18 @@ A Java Swing flashcard application (think Quizlet) but tailored for Chinese.
   - The sets are stored as YAML files that contain the name, and a list of Card objects. The Card object has the Chinese,
     English, and Pinyin for each card along with the stars the user has created. When the program is started SnakeYAML,
     a YAML parsing library, is used to parse each YAML file in the sets folder and turn them into a Set object. These
-    sets are stored in an ArrayList and all changes made to the sets are reflected in this list. When the program is closed
+    sets are stored in an ArrayList and all changes made to the sets are reflected in this list. When the program is closed,
     the sets are saved with SnakeYAML.
     
 ### How to use it
   - To get started, import an existing set from another app, such as Quizlet, using the import panel. Simply paste the
     set and specify the separator and order of the Chinese, Pinyin, and English. When you are done, click save. Another
     option is to use the set creator. Click the new button on the main menu and enter the Chinese, Pinyin, and English.
-    Finally, click save and name the set. Your sets will be saved in the "sets" folder when you close the program.
+    Finally, click save and name the set. Your sets will be saved in the "sets" folder that is created in the same
+    directory as the app when you close the program.
   - You can now view your flashcards in the viewer. CFS allows you to see cards that you have starred only, or all of
     your cards.
+  - If you need to make changes to your set, you can press the "Edit Selected Set" button on the welcome panel.
     
 ### Other Files
   - `Flashcard`: Displayed in the inner CardLayout of the FlashcardViewer. Contains methods for removing, adding, or checking
@@ -62,16 +64,27 @@ A Java Swing flashcard application (think Quizlet) but tailored for Chinese.
   - `ChineseFlashcards`: This is the file that needs to be run to start the program. It parses the dictionary file and 
     all sets in the "sets" folder.
   - `CFS.png`: Icon image for the MainWindow and SetSettingsPopup.
-  - `cedict_ts.u8`: Chinese to English Dictionary file with Pinyin. Used for autofilling the English and Pinyin when
-    creating a new set.
+  - `cedict_ts.u8`: Chinese to English Dictionary file with Pinyin. This is used for automatically filling in the English
+    and Pinyin when creating a new set.
     
 ### Resources I Used
   - [Drag and Drop JList Stack Overflow Post](https://stackoverflow.com/questions/3804361/how-to-enable-drag-and-drop-inside-jlist)
+    - I used the code from one of the answers to create the `DndJList` class. I changed several parts of it so that it
+      would extend JList and accept a List of Strings as items for the JList.
   - [The Java™ Tutorials](https://docs.oracle.com/javase/tutorial/uiswing/TOC.html)
+    - I used this to learn how to use CardLayout, and some BoxLayout features that were not discussed in class,
+    such as Glue, Struts, and RigidAreas.
   - [JDK 15 API Documentation](https://docs.oracle.com/en/java/javase/15/docs/api/index.html)
+    - I used this for finding out how to use various Swing features, such as InputMaps and ActionMaps.
   - [SnakeYAML Documentation](https://bitbucket.org/asomov/snakeyaml/wiki/Documentation)
+    - I used the documentation to figure out how to save the Set class to a yaml file and also read from it.
   - [CC-CEDICT Chinese-English Dictionary](https://cc-cedict.org/wiki/)
+    - I used this to determine the format that the dictionary entries were arranged, so I could parse it.
+
+### Project Dependencies
+  - [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
+  - [Radiance](https://github.com/kirill-grouchnikov/radiance)
 
 ### Notes about Running CFS
-CFS was created on Windows 10 and is uses Maven as its build tool. Cross-compatibility with MacOS is unknown. An executable
-JAR file will be available at some point.
+CFS was created on Windows 10 and uses Maven as its build tool. Cross-compatibility with macOS is unknown. Check the
+Releases section for a jar file or exe file.

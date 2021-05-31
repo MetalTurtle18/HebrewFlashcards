@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FlashcardsViewer extends JPanel implements ActionListener, MouseListener {
@@ -125,12 +126,16 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         // Create buttons for top toolbar
         JButton exitButton = new JButton("Back");
         exitButton.addActionListener(this);
+        JButton shuffleButton = new JButton("Shuffle");
+        shuffleButton.addActionListener(this);
 
         // Create and add top toolbar
         JPanel topToolbar = new JPanel();
         topToolbar.setLayout(new BoxLayout(topToolbar, BoxLayout.X_AXIS));
         topToolbar.setBorder(new EmptyBorder(10, 10, 0, 10));
         topToolbar.add(exitButton);
+        topToolbar.add(Box.createHorizontalStrut(10));
+        topToolbar.add(shuffleButton);
         add(topToolbar, BorderLayout.NORTH);
     }
 
@@ -272,6 +277,25 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         }
     }
 
+    /**
+     * Shuffles the flashcards and updates the order of the flashcards in the panel. This does not affect the order of the cards
+     * in the Set.
+     */
+    public void shuffleSet() {
+        // Shuffle flashcards
+        Collections.shuffle(flashcards);
+
+        // Re-add flashcards to flashcardPanel
+        flashcardPanel.removeAll();
+        AtomicInteger i = new AtomicInteger();
+        flashcards.forEach(flashcard -> {
+            flashcardPanel.add(flashcard, i.get());
+            i.getAndAdd(1);
+        });
+
+        resetFlashcards();
+    }
+
     @SuppressWarnings({"rawtypes", "ConstantConditions"})
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -291,6 +315,7 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
                 isVisible = false;
                 ChineseFlashcards.mainWindow.showWelcomePanel();
             }
+            case "Shuffle" -> shuffleSet();
         }
     }
 

@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -128,6 +129,8 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
         // Create buttons and text for top toolbar
         JButton exitButton = new JButton("Back");
         exitButton.addActionListener(this);
+        JButton shuffleButton = new JButton("Shuffle");
+        shuffleButton.addActionListener(this);
         // This button opens the SetSettingsPopup
         JButton settingsButton = new JButton("Settings");
         settingsButton.addActionListener(this);
@@ -140,6 +143,8 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
         topToolbar.setLayout(new BoxLayout(topToolbar, BoxLayout.X_AXIS));
         topToolbar.setBorder(new EmptyBorder(10, 10, 0, 10));
         topToolbar.add(exitButton);
+        topToolbar.add(Box.createHorizontalStrut(10));
+        topToolbar.add(shuffleButton);
         topToolbar.add(Box.createHorizontalStrut(10));
         topToolbar.add(settingsButton);
         topToolbar.add(Box.createHorizontalGlue());
@@ -273,6 +278,21 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
         }
     }
 
+    public void shuffleSet() {
+        // Shuffle flashcards
+        Collections.shuffle(flashcards);
+
+        // Re-add flashcards to flashcardPanel
+        flashcardPanel.removeAll();
+        AtomicInteger i = new AtomicInteger();
+        flashcards.forEach(flashcard -> {
+            flashcardPanel.add(flashcard, i.get());
+            i.getAndAdd(1);
+        });
+
+        resetFlashcards();
+    }
+
     @SuppressWarnings({"rawtypes", "ConstantConditions"})
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -293,6 +313,7 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
             }
             // Opens SetSettingsPopup
             case "Settings" -> new SetSettingsPopup(selectedSet, flashcards.get(currentFlashcard), termType + " " + definitionType);
+            case "Shuffle" -> shuffleSet();
         }
     }
 
