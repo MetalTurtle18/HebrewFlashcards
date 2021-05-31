@@ -15,6 +15,9 @@ public class WelcomePanel extends JPanel implements ActionListener {
     private boolean useStarredCards;
     private final JComboBox<String> setMenu;
 
+    /**
+     * Constructor for WelcomePanel. Adds text and button to the panel.
+     */
     public WelcomePanel() {
         try {
             ChineseFlashcards.populateSetList();
@@ -100,6 +103,10 @@ public class WelcomePanel extends JPanel implements ActionListener {
         add(importButton);
     }
 
+    /**
+     * Handles button presses for Start, New, Edit Selected Set, and Import buttons
+     * @param e ActionEvent
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
