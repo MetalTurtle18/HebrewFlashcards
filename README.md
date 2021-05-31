@@ -80,6 +80,8 @@ A Java Swing flashcard application (think [Quizlet](https://quizlet.com)) but ta
     - I used the documentation to figure out how to save the Set class to a yaml file and also read from it.
   - [CC-CEDICT Chinese-English Dictionary](https://cc-cedict.org/wiki/)
     - I used this to determine the format that the dictionary entries were arranged, so I could parse it.
+  - [launch4j](http://launch4j.sourceforge.net)
+    - Used to create EXE file with bundled JRE and splash screen.
 
 ### Project Dependencies
   - [SnakeYAML](https://bitbucket.org/asomov/snakeyaml)
