@@ -171,6 +171,7 @@ public class EditorPanel extends JPanel implements ActionListener {
             scrollPane.repaint();
             cards.remove(index);
             saveButton.setEnabled(cards.size() != 0);
+            cardCounter.setText(cards.size() + " card" + ((cards.size() != 1) ? "s" : ""));
         } else if (e.getActionCommand().equals("Save")) {
             String proposedName = "";
             while (proposedName != null) {
