@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 import java.util.List;
 
 // Adapted from https://stackoverflow.com/questions/3804361/how-to-enable-drag-and-drop-inside-jlist
@@ -58,14 +57,5 @@ public class DndJList extends JList<String> {
         DefaultListModel<String> listModel = new DefaultListModel<>();
         listModel.addAll(items);
         return listModel;
-    }
-
-    // For testing purposes only
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        frame.add(new DndJList(Arrays.asList("Cat", "Dog", "Cow", "Horse", "Pig", "Monkey")));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
     }
 }

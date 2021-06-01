@@ -6,6 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * A JPanel representation of a Card with helper methods for stars.
+ */
 public class Flashcard extends JPanel {
     public static int ENGLISH = 0;
     public static int PINYIN = 1;
@@ -24,6 +27,10 @@ public class Flashcard extends JPanel {
         add(Box.createVerticalGlue());
     }
 
+    /**
+     * Changes the text so that it is the specified language
+     * @param newSide the specified Flashcard language constant
+     */
     public void showSide(int newSide) {
         side = newSide;
         Font font;
@@ -38,6 +45,7 @@ public class Flashcard extends JPanel {
             font = Card.getChineseFont(30);
             newText = card.getChinese();
         }
+        // This gets the width of the font and keeps adding breaks to the JLabel until the width is less than the width of the flashcard
         FontMetrics fm = label.getFontMetrics(font);
         StringBuilder realString = new StringBuilder("<html><div style='text-align: center;'>");
         String testString = "";
@@ -79,6 +87,7 @@ public class Flashcard extends JPanel {
     }
 
     public String getStarsDisplayText() {
+        // Used to get the display text in StarFlashcardsViewer so that user knows why flashcard was starred
         ArrayList<String> displayText = new ArrayList<>();
         card.getStars().forEach(s -> {
             String[] star = s.split(" ");

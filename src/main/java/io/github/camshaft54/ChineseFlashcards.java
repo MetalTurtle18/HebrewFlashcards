@@ -29,11 +29,16 @@ public class ChineseFlashcards {
     public static HashMap<String, DictEntry> dict;
     public static String setsFolderLocation;
 
+    /**
+     * Sets up and creates the main window
+     * @param args command arguments (not applicable)
+     */
     public static void main(String[] args) {
         setupSetsFolder();
 
         parseDictionary();
 
+        // Creates a Yaml that can store and read a Set
         Constructor setConstructor = new Constructor(Set.class);
         TypeDescription setDescription = new TypeDescription(Set.class);
         setDescription.addPropertyParameters("cards", Card.class);
@@ -41,9 +46,11 @@ public class ChineseFlashcards {
         yaml = new Yaml(setConstructor);
         sets = new ArrayList<>();
 
+        // When the program is closed, the try statement below will try to save all of the flashcard sets.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 for (int i = 0; i < sets.size(); i++) {
+                    // Note that this uses an OutputStreamWriter so that way the files written are in UTF_16 (otherwise it will default to ASCII for the jar/exe version)
                     yaml.dump(sets.get(i), new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + setFiles.get(i)), StandardCharsets.UTF_16));
                 }
             } catch (IOException e) {
@@ -52,14 +59,20 @@ public class ChineseFlashcards {
         }));
 
         SwingUtilities.invokeLater(() -> {
+            // Attempts to set the skin of the program to Substance Graphite Chalk
             try {
                 UIManager.setLookAndFeel(new SubstanceGraphiteChalkLookAndFeel());
             } catch (UnsupportedLookAndFeelException ignored) {}
+
+            // Opens the main window
             mainWindow = new MainWindow();
         });
     }
 
-    public static void populateSetList() throws URISyntaxException {
+    /**
+     * Reads from the sets folder all of the yaml files and adds them to the sets list in this class. Called by WelcomePanel.
+     */
+    public static void populateSetList() {
         if (setFiles != null && sets != null) {
             try {
                 for (int i = 0; i < sets.size(); i++) {
@@ -88,6 +101,10 @@ public class ChineseFlashcards {
         }
     }
 
+    /**
+     * Parse the the CEDICT dictionary using string manipulation. Saves the dictionary entries to a hashmap of the Chinese
+     * to the DictEntry with Pinyin and English.
+     */
     public static void parseDictionary() {
         dict = new HashMap<>();
         Scanner scan = new Scanner(new InputStreamReader(ChineseFlashcards.class.getResourceAsStream("/translate/cedict_ts.u8"), StandardCharsets.UTF_8));
@@ -109,6 +126,10 @@ public class ChineseFlashcards {
         }
     }
 
+    /**
+     * Add a new folder called sets in the same directory that the program is located, if necessary. Record the location
+     * of said folder to setsFolderLocation to be used by other methods.
+     */
     public static void setupSetsFolder() {
         try {
             String jarLocation = new File(ChineseFlashcards.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();

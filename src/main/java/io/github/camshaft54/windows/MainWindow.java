@@ -40,6 +40,9 @@ public class MainWindow extends JFrame {
         root.add(welcomePanel, "welcome");
     }
 
+    // All of the methods below remove the current panel if applicable and replace it with a new one. They then set the
+    // CardLayout to display the new panel.
+
     public void showFlashcardPanel(Set selectedSet, boolean isStarredSet) {
         if (flashcardsViewer != null) {
             root.remove(flashcardsViewer);
@@ -47,6 +50,7 @@ public class MainWindow extends JFrame {
         if (starFlashcardsViewer != null) {
             root.remove(starFlashcardsViewer);
         }
+        // Use StarFlashcardsViewer if starred set, FlashcardsViewer if not
         if (!isStarredSet) {
             flashcardsViewer = new FlashcardsViewer(selectedSet);
             root.add(flashcardsViewer, "flashcards");

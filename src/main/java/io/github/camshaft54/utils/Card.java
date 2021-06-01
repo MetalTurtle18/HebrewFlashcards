@@ -3,6 +3,9 @@ package io.github.camshaft54.utils;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Represents a "three-sided" card with a JavaBeans conforming class. Stores the stars the card has as pairs of numbers.
+ */
 public class Card {
     private ArrayList<String> stars = new ArrayList<>();
     private String chinese;

@@ -30,6 +30,7 @@ public class ImportPanel extends JPanel implements ActionListener {
     public ImportPanel() {
         setLayout(new BorderLayout());
 
+        // Create top toolbar with exit button
         JPanel toolbar = new JPanel();
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
         toolbar.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -37,6 +38,7 @@ public class ImportPanel extends JPanel implements ActionListener {
         exitButton.addActionListener(this);
         toolbar.add(exitButton);
 
+        // Create main JPanel that will contains input text box and other information about delimiters and name
         JPanel main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         inputTextArea = new JTextArea(10, 40);
@@ -49,6 +51,7 @@ public class ImportPanel extends JPanel implements ActionListener {
         formatPanel.setLayout(new BoxLayout(formatPanel, BoxLayout.X_AXIS));
         formatPanel.setAlignmentX(CENTER_ALIGNMENT);
 
+        // This panel contains a drag and drop JList used to determine the desired order of the parts of the card
         JPanel dndJListPanel = new JPanel();
         dndJListPanel.setBorder(new CompoundBorder(new LineBorder(new Color(196, 196, 196), 2), new EmptyBorder(5, 5, 5, 5)));
         dndJListPanel.setLayout(new BoxLayout(dndJListPanel, BoxLayout.Y_AXIS));
@@ -61,6 +64,7 @@ public class ImportPanel extends JPanel implements ActionListener {
         dndJListPanel.add(dndJList);
         dndJListPanel.add(Box.createVerticalGlue());
 
+        // Add text boxes for separators between items and cards
         JPanel separators = new JPanel();
         separators.setLayout(new BoxLayout(separators, BoxLayout.Y_AXIS));
         separators.setBorder(new CompoundBorder(new LineBorder(new Color(196, 196, 196), 2), new EmptyBorder(5, 5, 5, 5)));
@@ -91,6 +95,7 @@ public class ImportPanel extends JPanel implements ActionListener {
         formatPanel.add(separators);
         formatPanel.add(dndJListPanel);
 
+        // Adds text field for name and builds main panel with the panels from above
         JLabel setNameLabel = new JLabel("Set Name:");
         setNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         nameTextField = new JTextField(15);
@@ -126,6 +131,7 @@ public class ImportPanel extends JPanel implements ActionListener {
             }
             String[] unparsedCards = inputTextArea.getText().split(cardSeparatorTextField.getText());
             ArrayList<Card> cards = new ArrayList<>();
+            // this for loop gets the order from the DndJList and adds to an array
             int index = 0;
             int[] typeIndex = new int[3];
             for (int i = 0; i < dndJList.getModel().getSize(); i++) {
@@ -143,6 +149,8 @@ public class ImportPanel extends JPanel implements ActionListener {
                 }
                 typeIndex[i] = type;
             }
+
+            // this enhanced for loop attempts to parse out the text and create a card. If it fails, it will alert the user
             try {
                 for (String unparsedCard : unparsedCards) {
                     String[] cardParts = new String[3];
@@ -155,9 +163,10 @@ public class ImportPanel extends JPanel implements ActionListener {
                     index++;
                 }
             } catch (Exception exception) {
-                JOptionPane.showMessageDialog(this, "Error parsing card on line " + (index + 1) + "! Content: " + unparsedCards[index], "Parsing Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error parsing card on line " + (index + 1) + "! Content of the line: " + unparsedCards[index], "Parsing Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            // Create the Set, save it to file, then exit the panel
             Set set = new Set();
             set.setCards(cards);
             set.setName(nameTextField.getText());

@@ -18,6 +18,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * This panel is where the user can edit a selected set or create a new set
+ */
 public class EditorPanel extends JPanel implements ActionListener {
     JPanel editor;
     JScrollPane scrollPane;
@@ -26,7 +29,10 @@ public class EditorPanel extends JPanel implements ActionListener {
     HashMap<Integer, JPanel> cards;
     int idTracker = 0;
 
-    public EditorPanel() throws HeadlessException {
+    /**
+     * Constructs the Editor panel with a single blank flashcard entry (used when user clicks new button).
+     */
+    public EditorPanel() {
         cards = new HashMap<>();
 
         setLayout(new BorderLayout());
@@ -37,6 +43,10 @@ public class EditorPanel extends JPanel implements ActionListener {
         addNewCard();
     }
 
+    /**
+     * Constructs the editor panel with the set specified in the editor panel (used when user clicks edit selected set).
+     * @param selectedSet the set to be loaded into the editor panel after initialization
+     */
     public EditorPanel(Set selectedSet) {
         cards = new HashMap<>();
 
@@ -52,7 +62,11 @@ public class EditorPanel extends JPanel implements ActionListener {
         }
     }
 
+    /**
+     * Sets up the toolbar and JScrollPane. The JScrollPane contains all of the flashcard entries
+     */
     private void setupToolbarAndScrollPane() {
+        // Creates toolbar with exitButton, saveButton, and cardCounter
         JPanel toolbar = new JPanel();
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
         toolbar.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -72,6 +86,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         toolbar.add(cardCounter);
         add(toolbar, BorderLayout.NORTH);
 
+        // Create and add JScrollPane
         editor = new JPanel();
         editor.setLayout(new BoxLayout(editor, BoxLayout.Y_AXIS));
         scrollPane = new JScrollPane(editor);
@@ -79,11 +94,15 @@ public class EditorPanel extends JPanel implements ActionListener {
         add(scrollPane, BorderLayout.CENTER);
     }
 
+    /**
+     * Creates a blank card in the JScrollPane.
+     */
     private void addNewCard() {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(new CompoundBorder(new LineBorder(new Color(192, 192, 192), 2), new EmptyBorder(10, 10, 10, 10)));
 
+        // Add the chinese text box and "X" button for closing window
         Box chineseBox = new Box(BoxLayout.X_AXIS);
         JTextField chineseTextField = new JTextField(20);
         chineseTextField.setMaximumSize(chineseTextField.getPreferredSize());
@@ -96,6 +115,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         chineseBox.add(Box.createHorizontalGlue());
         chineseBox.add(deleteButton);
 
+        // Add pinyin text box and genPinyinButton that generates pinyin based on chinese that is entered
         Box pinyinBox = new Box(BoxLayout.X_AXIS);
         JTextField pinyinTextField = new JTextField(20);
         pinyinTextField.setMaximumSize(pinyinTextField.getPreferredSize());
@@ -108,6 +128,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         pinyinBox.add(Box.createHorizontalGlue());
         pinyinBox.add(genPinyinButton);
 
+        // Add english text box and genEnglishButton that generates english based on chinese that is entered
         Box englishBox = new Box(BoxLayout.X_AXIS);
         JTextField englishTextField = new JTextField(20);
         englishTextField.setMaximumSize(englishTextField.getPreferredSize());
@@ -120,6 +141,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         englishBox.add(Box.createHorizontalGlue());
         englishBox.add(genEnglishButton);
 
+        // Create the card panel with the 3 Boxes from above
         card.add(chineseBox);
         card.add(Box.createVerticalStrut(5));
         card.add(pinyinBox);
@@ -134,6 +156,11 @@ public class EditorPanel extends JPanel implements ActionListener {
         cardCounter.setText(cards.size() + " card" + ((cards.size() != 1) ? "s" : ""));
     }
 
+    /**
+     * This method goes through all of the JPanels in cards and extracts the chinese, pinyin, and english. It then saves
+     * these values as a Card in a Set.
+     * @param name the name for the set.
+     */
     private void saveSet(String name) {
         Set set = new Set();
         set.setName(name);
@@ -157,6 +184,10 @@ public class EditorPanel extends JPanel implements ActionListener {
         ChineseFlashcards.mainWindow.showWelcomePanel();
     }
 
+    /**
+     * Handles buttons in each card by getting the card ID from the ActionCommand. Also handles save and exit button.
+     * @param e ActionEvent
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Exit")) {
@@ -175,10 +206,12 @@ public class EditorPanel extends JPanel implements ActionListener {
         } else if (e.getActionCommand().equals("Save")) {
             String proposedName = "";
             while (proposedName != null) {
-                proposedName = JOptionPane.showInputDialog("Enter a name for this set:");
-                if (proposedName != null && !proposedName.trim().equals("")) {
-                    String finalProposedName = proposedName;
-                    if (!proposedName.trim().equals("") && ChineseFlashcards.sets.stream().noneMatch(set -> set.getName().equals(finalProposedName.trim()))) {
+                proposedName = JOptionPane.showInputDialog("Enter a name for this set:"); // Get input from user for set name
+                if (proposedName != null && !proposedName.trim().equals("")) { // If the the user did not press cancel and did not leave the input blank, continue
+                    // The stream can only accept objects that are effectively final, so a "final" version of proposedName must be created
+                    String finalProposedName = proposedName.trim();
+                    // If proposed name does not match other sets, save the set and alert the user
+                    if (ChineseFlashcards.sets.stream().noneMatch(set -> set.getName().equals(finalProposedName))) {
                         saveSet(proposedName.trim());
                         JOptionPane.showMessageDialog(this, "Saved \"" + proposedName.trim() + "\" to file!", "Success", JOptionPane.INFORMATION_MESSAGE);
                         return;
@@ -192,6 +225,7 @@ public class EditorPanel extends JPanel implements ActionListener {
             String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
             if (!chinese.equals("")) {
                 try {
+                    // Attempts to find a value in the dictionary that matches the Chinese, then fills it in.
                     ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).setText(ChineseFlashcards.dict.get(chinese).getPinyin());
                 } catch (Exception ignored) { }
             }
@@ -200,6 +234,7 @@ public class EditorPanel extends JPanel implements ActionListener {
             String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
             if (!chinese.equals("")) {
                 try {
+                    // Attempts to find a value in the dictionary that matches the Chinese, then fills it in.
                     ((JTextField) ((Box) panel.getComponent(4)).getComponent(2)).setText(ChineseFlashcards.dict.get(chinese).getEnglish());
                 } catch (Exception ignored) { }
             }

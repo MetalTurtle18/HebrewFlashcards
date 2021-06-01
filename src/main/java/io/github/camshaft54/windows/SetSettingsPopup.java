@@ -34,6 +34,7 @@ public class SetSettingsPopup extends JFrame implements ActionListener {
         this.currentLangConfig = currentLangConfig;
 
         setTitle("Set Settings");
+        // Dispose on close so that program is not halted when window is closed.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(ChineseFlashcards.mainWindow);
         setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
@@ -45,6 +46,7 @@ public class SetSettingsPopup extends JFrame implements ActionListener {
             e.printStackTrace();
         }
 
+        // Add buttons to JPanel
         JButton clearAllSetStarsButton = new JButton("Clear All Stars for Set");
         clearAllSetStarsButton.setAlignmentX(CENTER_ALIGNMENT);
         clearAllSetStarsButton.addActionListener(this);
@@ -65,6 +67,7 @@ public class SetSettingsPopup extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // Executes the command desired by the user.
         switch (e.getActionCommand()) {
             case "Clear All Stars for Set" -> set.getCards().forEach(card -> card.getStars().clear());
             case "Clear Stars with Current Language Configuration" -> set.getCards().forEach(card -> card.getStars().removeIf(s -> s.equals(currentLangConfig)));

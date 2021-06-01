@@ -2,6 +2,9 @@ package io.github.camshaft54.utils;
 
 import java.util.ArrayList;
 
+/**
+ * Holds a list of Cards and a name for the set. This is used when storing the sets in the "sets" folder.
+ */
 public class Set {
     ArrayList<Card> cards = new ArrayList<>();
     String name;
