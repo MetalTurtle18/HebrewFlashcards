@@ -11,20 +11,29 @@ public class DndJList extends JList<String> {
     DefaultListModel<String> myListModel;
     List<String> items;
 
+    /**
+     * Initializes the list with a StringListModel and adds the mouseAdapter
+     * @param items the items to put it in the list
+     */
     public DndJList(List<String> items) {
         this.items = items;
         myListModel = createStringListModel();
         setModel(myListModel);
         setFont(new Font("Arial", Font.PLAIN, 20));
-        MyMouseAdaptor myMouseAdaptor = new MyMouseAdaptor();
+        MouseAdaptor myMouseAdaptor = new MouseAdaptor();
         addMouseListener(myMouseAdaptor);
         addMouseMotionListener(myMouseAdaptor);
     }
 
-    private class MyMouseAdaptor extends MouseInputAdapter {
+    /**
+     * This inner class listens for when the mouse is pressed and moves the item the mouse started at to the point where
+     * it is dragged to.
+     */
+    private class MouseAdaptor extends MouseInputAdapter {
         private boolean mouseDragging = false;
         private int dragSourceIndex;
 
+        // Triggered at start of drag
         @Override
         public void mousePressed(MouseEvent e) {
             if (SwingUtilities.isLeftMouseButton(e)) {
@@ -38,6 +47,7 @@ public class DndJList extends JList<String> {
             mouseDragging = false;
         }
 
+        // Triggered at end of drag
         @Override
         public void mouseDragged(MouseEvent e) {
             if (mouseDragging) {
@@ -53,6 +63,10 @@ public class DndJList extends JList<String> {
         }
     }
 
+    /**
+     * Returns a ListModel with the items the user created the DndJList with
+     * @return a DefaultListModel<String>
+     */
     private DefaultListModel<String> createStringListModel() {
         DefaultListModel<String> listModel = new DefaultListModel<>();
         listModel.addAll(items);
