@@ -1,8 +1,8 @@
-package io.github.camshaft54.panels;
+package io.github.camshaft54.chineseflashcards.panels;
 
-import io.github.camshaft54.ChineseFlashcards;
-import io.github.camshaft54.utils.Card;
-import io.github.camshaft54.utils.Set;
+import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
+import io.github.camshaft54.chineseflashcards.utils.Card;
+import io.github.camshaft54.chineseflashcards.utils.Set;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -164,7 +164,6 @@ public class EditorPanel extends JPanel implements ActionListener {
     private void saveSet(String name) {
         Set set = new Set();
         set.setName(name);
-        ArrayList<Card> cards = set.getCards();
         for (HashMap.Entry<Integer, JPanel> entry : this.cards.entrySet()) {
             JPanel panel = entry.getValue();
             String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
@@ -174,7 +173,7 @@ public class EditorPanel extends JPanel implements ActionListener {
             card.setChinese(chinese);
             card.setPinyin(pinyin);
             card.setEnglish(english);
-            cards.add(card);
+            set.getCards().add(card);
         }
         try {
             ChineseFlashcards.yaml.dump(set, new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + name + ".yaml"), StandardCharsets.UTF_16));
@@ -210,8 +209,8 @@ public class EditorPanel extends JPanel implements ActionListener {
                 if (proposedName != null && !proposedName.trim().equals("")) { // If the the user did not press cancel and did not leave the input blank, continue
                     // The stream can only accept objects that are effectively final, so a "final" version of proposedName must be created
                     String finalProposedName = proposedName.trim();
-                    // If proposed name does not match other sets, save the set and alert the user
-                    if (ChineseFlashcards.sets.stream().noneMatch(set -> set.getName().equals(finalProposedName))) {
+                    // If proposed name does not match other sets' name or filename, save the set and alert the user
+                    if (ChineseFlashcards.sets.containsKey(finalProposedName) && ChineseFlashcards.sets.values().stream().noneMatch(set -> set.getFilename().equals(finalProposedName))) {
                         saveSet(proposedName.trim());
                         JOptionPane.showMessageDialog(this, "Saved \"" + proposedName.trim() + "\" to file!", "Success", JOptionPane.INFORMATION_MESSAGE);
                         return;

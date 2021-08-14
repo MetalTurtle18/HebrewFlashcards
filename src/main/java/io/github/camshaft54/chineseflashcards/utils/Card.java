@@ -1,4 +1,4 @@
-package io.github.camshaft54.utils;
+package io.github.camshaft54.chineseflashcards.utils;
 
 import java.awt.*;
 import java.util.ArrayList;

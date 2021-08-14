@@ -1,7 +1,7 @@
-package io.github.camshaft54.panels;
+package io.github.camshaft54.chineseflashcards.panels;
 
-import io.github.camshaft54.ChineseFlashcards;
-import io.github.camshaft54.utils.Set;
+import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
+import io.github.camshaft54.chineseflashcards.utils.Set;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -52,7 +52,7 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         flashcardPanel.setBorder(new CompoundBorder(margin, lineBorder));
         add(flashcardPanel, BorderLayout.CENTER);
 
-        // Add all of the flashcards panels to the inner flashcard panel
+        // Add all the flashcards panels to the inner flashcard panel
         flashcards = new ArrayList<>();
         AtomicInteger i = new AtomicInteger();
         selectedSet.getCards().forEach(card -> {

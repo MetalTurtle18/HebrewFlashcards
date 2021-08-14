@@ -1,9 +1,9 @@
-package io.github.camshaft54;
+package io.github.camshaft54.chineseflashcards;
 
-import io.github.camshaft54.utils.Card;
-import io.github.camshaft54.utils.DictEntry;
-import io.github.camshaft54.utils.Set;
-import io.github.camshaft54.windows.MainWindow;
+import io.github.camshaft54.chineseflashcards.utils.Card;
+import io.github.camshaft54.chineseflashcards.utils.DictEntry;
+import io.github.camshaft54.chineseflashcards.utils.Set;
+import io.github.camshaft54.chineseflashcards.windows.MainWindow;
 import org.pushingpixels.substance.api.skin.SubstanceGraphiteChalkLookAndFeel;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
@@ -15,16 +15,12 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class ChineseFlashcards {
     public static MainWindow mainWindow;
-    public static ArrayList<Set> sets;
-    public static ArrayList<String> setFiles;
+    public static HashMap<String, Set> sets;
     public static Yaml yaml;
     public static HashMap<String, DictEntry> dict;
     public static String setsFolderLocation;
@@ -44,19 +40,10 @@ public class ChineseFlashcards {
         setDescription.addPropertyParameters("cards", Card.class);
         setConstructor.addTypeDescription(setDescription);
         yaml = new Yaml(setConstructor);
-        sets = new ArrayList<>();
+        sets = new HashMap<>();
 
-        // When the program is closed, the try statement below will try to save all of the flashcard sets.
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                for (int i = 0; i < sets.size(); i++) {
-                    // Note that this uses an OutputStreamWriter so that way the files written are in UTF_16 (otherwise it will default to ASCII for the jar/exe version)
-                    yaml.dump(sets.get(i), new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + setFiles.get(i)), StandardCharsets.UTF_16));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
+        // When the program is closed, the try statement below will try to save all the flashcard sets.
+        Runtime.getRuntime().addShutdownHook(new Thread(ChineseFlashcards::saveSets));
 
         SwingUtilities.invokeLater(() -> {
             // Attempts to set the skin of the program to Substance Graphite Chalk
@@ -73,26 +60,20 @@ public class ChineseFlashcards {
      * Reads from the sets folder all of the yaml files and adds them to the sets list in this class. Called by WelcomePanel.
      */
     public static void populateSetList() {
-        if (setFiles != null && sets != null) {
-            try {
-                for (int i = 0; i < sets.size(); i++) {
-                    yaml.dump(sets.get(i), new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + setFiles.get(i)), StandardCharsets.UTF_16));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (sets != null) {
+            saveSets();
             sets.clear();
-            setFiles.clear();
         }
 
         File folder = new File(setsFolderLocation);
         String[] files = folder.list((dir, name) -> name.endsWith(".yaml") || name.endsWith(".yml"));
         if (files != null) {
-            setFiles = (ArrayList<String>) Arrays.stream(files).collect(Collectors.toList());
             for (String name : files) {
                 try {
                     FileInputStream fs = new FileInputStream(setsFolderLocation + "\\" + name);
-                    sets.add(yaml.load(fs));
+                    Set set = yaml.load(fs);
+                    set.setFilename(name);
+                    sets.put(set.getName(), set);
                 } catch (IOException e) {
                     System.out.println("Error loading sets!\nExitingCFS");
                     return;
@@ -138,5 +119,15 @@ public class ChineseFlashcards {
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void saveSets() {
+        sets.forEach((name, set) -> {
+            try {
+                yaml.dump(set, new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + set.getFilename()), StandardCharsets.UTF_16));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

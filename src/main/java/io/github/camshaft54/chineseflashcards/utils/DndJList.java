@@ -1,4 +1,4 @@
-package io.github.camshaft54.utils;
+package io.github.camshaft54.chineseflashcards.utils;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;

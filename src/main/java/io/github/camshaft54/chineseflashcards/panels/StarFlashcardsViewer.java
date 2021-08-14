@@ -1,8 +1,8 @@
-package io.github.camshaft54.panels;
+package io.github.camshaft54.chineseflashcards.panels;
 
-import io.github.camshaft54.ChineseFlashcards;
-import io.github.camshaft54.utils.Set;
-import io.github.camshaft54.windows.SetSettingsPopup;
+import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
+import io.github.camshaft54.chineseflashcards.utils.Set;
+import io.github.camshaft54.chineseflashcards.windows.SetSettingsPopup;
 
 import javax.swing.*;
 import javax.swing.border.Border;

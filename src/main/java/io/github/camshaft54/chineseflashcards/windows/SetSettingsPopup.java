@@ -1,8 +1,8 @@
-package io.github.camshaft54.windows;
+package io.github.camshaft54.chineseflashcards.windows;
 
-import io.github.camshaft54.ChineseFlashcards;
-import io.github.camshaft54.panels.Flashcard;
-import io.github.camshaft54.utils.Set;
+import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
+import io.github.camshaft54.chineseflashcards.panels.Flashcard;
+import io.github.camshaft54.chineseflashcards.utils.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

@@ -1,9 +1,9 @@
-package io.github.camshaft54.panels;
+package io.github.camshaft54.chineseflashcards.panels;
 
-import io.github.camshaft54.ChineseFlashcards;
-import io.github.camshaft54.utils.Card;
-import io.github.camshaft54.utils.DndJList;
-import io.github.camshaft54.utils.Set;
+import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
+import io.github.camshaft54.chineseflashcards.utils.Card;
+import io.github.camshaft54.chineseflashcards.utils.DndJList;
+import io.github.camshaft54.chineseflashcards.utils.Set;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;

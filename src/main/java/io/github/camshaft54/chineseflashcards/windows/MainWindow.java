@@ -1,8 +1,8 @@
-package io.github.camshaft54.windows;
+package io.github.camshaft54.chineseflashcards.windows;
 
-import io.github.camshaft54.ChineseFlashcards;
-import io.github.camshaft54.panels.*;
-import io.github.camshaft54.utils.Set;
+import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
+import io.github.camshaft54.chineseflashcards.panels.*;
+import io.github.camshaft54.chineseflashcards.utils.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,11 +17,12 @@ public class MainWindow extends JFrame {
     public FlashcardsViewer flashcardsViewer;
     public StarFlashcardsViewer starFlashcardsViewer;
     public ImportPanel importPanel;
+    public MatchPanel matchPanel;
 
     public MainWindow() throws HeadlessException {
         setTitle("CFS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 425);
+        setSize(675, 500);
         setVisible(true);
         // Set custom image as icon
         try {
@@ -96,5 +97,22 @@ public class MainWindow extends JFrame {
         importPanel = new ImportPanel();
         root.add(importPanel, "import");
         cardLayout.show(root, "import");
+    }
+
+    public void showGameSelectorPopup(Set set) {
+        Object[] gameNames = {"Match"};
+        String selectedGame = (String) JOptionPane.showInputDialog(this, "Select Game:", "Game Selector",
+                JOptionPane.PLAIN_MESSAGE, null, gameNames, "Match");
+        if (selectedGame == null) return;
+        switch (selectedGame) {
+            case "Match" -> {
+                if (matchPanel != null) {
+                    root.remove(matchPanel);
+                }
+                matchPanel = new MatchPanel(set);
+                root.add(matchPanel, "match");
+                cardLayout.show(root, "match");
+            }
+        }
     }
 }
