@@ -1,5 +1,7 @@
 package io.github.camshaft54.chineseflashcards.utils;
 
+import io.github.camshaft54.chineseflashcards.panels.Flashcard;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -45,6 +47,21 @@ public class Card {
         this.pinyin = pinyin;
     }
 
+    public String getLanguageEntry(int language) {
+        switch (language) {
+            case Flashcard.ENGLISH -> {
+                return getEnglish();
+            }
+            case Flashcard.CHINESE -> {
+                return getChinese();
+            }
+            case Flashcard.PINYIN -> {
+                return getPinyin();
+            }
+            default -> throw new IllegalArgumentException("Invalid language. Must be Flashcard.CHINESE, Flashcard.ENGLISH, or Flashcard.PINYIN");
+        }
+    }
+
     public static Font getChineseFont(int size) {
         return new Font("KaiTi", Font.PLAIN, size);
     }
@@ -55,6 +72,30 @@ public class Card {
 
     public static Font getPinyinFont(int size) {
         return new Font("Arial", Font.PLAIN, size);
+    }
+
+    public static Font getFont(int language, int size) {
+        switch (language) {
+            case Flashcard.ENGLISH -> {
+                return getEnglishFont(size);
+            }
+            case Flashcard.CHINESE -> {
+                return getChineseFont(size);
+            }
+            case Flashcard.PINYIN -> {
+                return getPinyinFont(size);
+            }
+            default -> throw new IllegalArgumentException("Invalid language. Must be Flashcard.CHINESE, Flashcard.ENGLISH, or Flashcard.PINYIN");
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Card) {
+            Card otherCard = (Card) obj;
+            return otherCard.getPinyin().equals(pinyin) && otherCard.getChinese().equals(chinese) && otherCard.getEnglish().equals(english);
+        }
+        return false;
     }
 
     @Override

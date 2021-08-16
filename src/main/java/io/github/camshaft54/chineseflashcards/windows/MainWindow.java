@@ -115,4 +115,8 @@ public class MainWindow extends JFrame {
             }
         }
     }
+
+    public Dimension getCardLayoutSize() {
+        return cardLayout.preferredLayoutSize(this);
+    }
 }

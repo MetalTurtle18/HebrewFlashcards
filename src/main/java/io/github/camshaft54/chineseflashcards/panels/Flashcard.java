@@ -10,9 +10,9 @@ import java.util.ArrayList;
  * A JPanel representation of a Card with helper methods for stars.
  */
 public class Flashcard extends JPanel {
-    public static int ENGLISH = 0;
-    public static int PINYIN = 1;
-    public static int CHINESE = 2;
+    public static final int ENGLISH = 0;
+    public static final int PINYIN = 1;
+    public static final int CHINESE = 2;
     private final Card card;
     private final JLabel label;
     private int side;
