@@ -116,6 +116,13 @@ public class MainWindow extends JFrame {
         }
     }
 
+    public void reloadMatchPanel() {
+        root.remove(matchPanel);
+        revalidate();
+        root.add(matchPanel, "match");
+        cardLayout.show(root, "match");
+    }
+
     public Dimension getCardLayoutSize() {
         return cardLayout.preferredLayoutSize(this);
     }

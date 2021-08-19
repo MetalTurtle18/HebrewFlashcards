@@ -33,6 +33,12 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
                 mainPanel.setSize(getSize());
             }
         });
+        ChineseFlashcards.mainWindow.addWindowStateListener(e -> {
+            ChineseFlashcards.mainWindow.reloadMatchPanel();
+            System.out.println(getSize());
+            System.out.println(mainPanel.getSize());
+            mainPanel.setSize(getSize());
+        });
 
         // Create top toolbar and the buttons for it
         JButton exitButton = new JButton("Back");
@@ -98,26 +104,31 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
             firstCell.setBackground(Color.YELLOW);
             firstCells.set(firstCells.size() - 1, firstCell);
         } else {
-            if (((MatchCell) e.getComponent()).getCard().equals(firstCell.getCard()) && ((MatchCell) e.getComponent()).getLanguage() != firstCell.getLanguage()) {
-                firstCell.setBackground(Color.GREEN);
-                e.getComponent().setBackground(Color.GREEN);
-                score++;
-                firstCells.add(null);
-                MatchCell finalFirstCell = firstCell;
-                CompletableFuture<Void> modifyCells = CompletableFuture.runAsync(() -> {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(300);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
+            if (((MatchCell) e.getComponent()).getCard().equals(firstCell.getCard())) {
+                if (((MatchCell) e.getComponent()).getLanguage() == firstCell.getLanguage()) {
+                    firstCell.setBackground(Color.BLACK);
+                    firstCells.add(null);
+                } else {
+                    firstCell.setBackground(Color.GREEN);
+                    e.getComponent().setBackground(Color.GREEN);
+                    score++;
+                    firstCells.add(null);
+                    MatchCell finalFirstCell = firstCell;
+                    CompletableFuture.runAsync(() -> {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(300);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        finalFirstCell.setVisible(false);
+                        e.getComponent().setVisible(false);
+                    });
+                    if (score == 4) {
+                        JLabel winMessage = new JLabel("YOU WON!!!", SwingConstants.CENTER);
+                        winMessage.setFont(Card.getEnglishFont(80));
+                        winMessage.setSize(getSize());
+                        add(winMessage, JLayeredPane.MODAL_LAYER, 0);
                     }
-                    finalFirstCell.setVisible(false);
-                    e.getComponent().setVisible(false);
-                });
-                if (score == 4) {
-                    JLabel winMessage = new JLabel("YOU WON!!!");
-                    winMessage.setFont(Card.getEnglishFont(80));
-                    winMessage.setSize(getSize());
-                    add(winMessage, JLayeredPane.MODAL_LAYER, 0);
                 }
             } else {
                 firstCell.setBackground(Color.RED);
