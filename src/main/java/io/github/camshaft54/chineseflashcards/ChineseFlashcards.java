@@ -46,11 +46,6 @@ public class ChineseFlashcards {
         Runtime.getRuntime().addShutdownHook(new Thread(ChineseFlashcards::saveSets));
 
         SwingUtilities.invokeLater(() -> {
-            // Attempts to set the skin of the program to Substance Graphite Chalk
-            try {
-                UIManager.setLookAndFeel(new SubstanceGraphiteChalkLookAndFeel());
-            } catch (UnsupportedLookAndFeelException ignored) {}
-
             // Opens the main window
             mainWindow = new MainWindow();
         });

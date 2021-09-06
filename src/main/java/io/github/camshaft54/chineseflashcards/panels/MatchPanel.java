@@ -10,34 +10,48 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatchPanel extends JLayeredPane implements ActionListener, MouseListener {
     private final List<MatchCell> firstCells;
     private int score;
+    private Timer timer;
+    private long startTime;
+    private long currentTime;
+    private final JLabel timerLabel;
+    private final JButton startButton;
+    private final JButton resetButton;
+    private final List<MatchCell> matchCells;
+    private final JPanel matchGrid;
+    private final Set set;
 
     public MatchPanel(Set set) {
+        this.set = set;
         firstCells = new ArrayList<>();
         firstCells.add(null);
         score = 0;
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        SwingUtilities.invokeLater(() -> mainPanel.setSize(getSize()));
+        JPanel modalPanel = new JPanel(new BorderLayout());
+        SwingUtilities.invokeLater(() -> {
+            mainPanel.setSize(getSize());
+            modalPanel.setSize(getSize());
+        });
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 mainPanel.setSize(getSize());
+                modalPanel.setSize(getSize());
             }
         });
         ChineseFlashcards.mainWindow.addWindowStateListener(e -> {
             ChineseFlashcards.mainWindow.reloadMatchPanel();
-            System.out.println(getSize());
-            System.out.println(mainPanel.getSize());
             mainPanel.setSize(getSize());
+            modalPanel.setSize(getSize());
         });
 
         // Create top toolbar and the buttons for it
@@ -50,49 +64,66 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         topToolbar.add(exitButton);
 
         // Create bottom toolbar and the buttons for it
-        JButton startButton = new JButton("Start");
+        startButton = new JButton("Start");
         startButton.addActionListener(this);
-        JButton resetButton = new JButton("↻");
+        resetButton = new JButton("Reset");
         resetButton.addActionListener(this);
+        resetButton.setEnabled(false);
 
         JPanel bottomToolbar = new JPanel();
         bottomToolbar.setLayout(new BoxLayout(bottomToolbar, BoxLayout.X_AXIS));
         bottomToolbar.setBorder(new EmptyBorder(0, 10, 10, 10));
-        bottomToolbar.add(new JLabel("00:00"));
+        bottomToolbar.add(timerLabel = new JLabel("00:00:00"));
         bottomToolbar.add(Box.createHorizontalStrut(10));
         bottomToolbar.add(startButton);
         bottomToolbar.add(Box.createHorizontalStrut(5));
         bottomToolbar.add(resetButton);
 
         // Create Match grid panel
-        JPanel matchGrid = new JPanel();
+        matchGrid = new JPanel();
         matchGrid.setLayout(new GridLayout(3, 8, 10, 10));
         matchGrid.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        Random rand = new Random();
-        List<MatchCell> matchCells = new ArrayList<>();
-        pickNRandomCards(set.getCards(), 12).forEach(card -> {
-            int firstLanguage = rand.nextInt(3);
-            matchCells.add(new MatchCell(card, firstLanguage, this));
-            int secondLanguage;
-            do {
-                secondLanguage = rand.nextInt(3);
-            } while (secondLanguage == firstLanguage);
-            matchCells.add(new MatchCell(card, secondLanguage, this));
-        });
-        Collections.shuffle(matchCells);
-        matchCells.forEach(matchGrid::add);
+        matchCells = new ArrayList<>();
+        addMatchCells(set, matchGrid, matchCells);
+
 
         // Add panels to the main panel
         mainPanel.add(topToolbar, BorderLayout.NORTH);
         mainPanel.add(bottomToolbar, BorderLayout.SOUTH);
         mainPanel.add(matchGrid, BorderLayout.CENTER);
         add(mainPanel, JLayeredPane.DEFAULT_LAYER, 0);
+        modalPanel.setOpaque(false);
+        add(modalPanel, JLayeredPane.MODAL_LAYER, 0);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "Back" -> ChineseFlashcards.mainWindow.showWelcomePanel();
+            case "Start" -> {
+                matchCells.forEach(mc -> mc.getLabel().setEnabled(true));
+                ChineseFlashcards.mainWindow.repaint();
+                startTime = System.currentTimeMillis();
+                timer = new Timer(100, timer -> timerLabel.setText(formatToHHMMSSmmmm((currentTime = System.currentTimeMillis()) - startTime)));
+                timer.start();
+                startButton.setEnabled(false);
+                resetButton.setEnabled(true);
+            }
+            case "Reset" -> {
+                score = 0;
+                timerLabel.setText("00:00:00");
+                timer.stop();
+                firstCells.clear();
+                firstCells.add(null);
+                matchCells.clear();
+
+                // Remove congratulations message if present
+                ((JPanel) getComponentsInLayer(JLayeredPane.MODAL_LAYER)[0]).removeAll();
+                addMatchCells(set, matchGrid, matchCells);
+                ChineseFlashcards.mainWindow.repaint();
+                resetButton.setEnabled(false);
+                startButton.setEnabled(true);
+            }
         }
     }
 
@@ -101,49 +132,44 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         MatchCell firstCell = firstCells.get(firstCells.size() - 1);
         if (firstCell == null) {
             firstCell = (MatchCell) e.getComponent();
-            firstCell.setBackground(Color.YELLOW);
+            firstCell.setBackground(MatchCell.partial);
             firstCells.set(firstCells.size() - 1, firstCell);
         } else {
             if (((MatchCell) e.getComponent()).getCard().equals(firstCell.getCard())) {
                 if (((MatchCell) e.getComponent()).getLanguage() == firstCell.getLanguage()) {
-                    firstCell.setBackground(Color.BLACK);
+                    firstCell.setBackground(MatchCell.regular);
+                    ChineseFlashcards.mainWindow.revalidate();
+                    ChineseFlashcards.mainWindow.repaint();
                     firstCells.add(null);
                 } else {
-                    firstCell.setBackground(Color.GREEN);
-                    e.getComponent().setBackground(Color.GREEN);
                     score++;
                     firstCells.add(null);
-                    MatchCell finalFirstCell = firstCell;
-                    CompletableFuture.runAsync(() -> {
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(300);
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                        finalFirstCell.setVisible(false);
-                        e.getComponent().setVisible(false);
-                    });
-                    if (score == 4) {
-                        JLabel winMessage = new JLabel("YOU WON!!!", SwingConstants.CENTER);
+                    fadeComponent(firstCell);
+                    fadeComponent((MatchCell) e.getComponent());
+                    if (score == matchCells.size()/2) { // The user won!
+                        timer.stop();
+                        JLabel winMessage = new JLabel("Congratulations, you won in " + formatToHHMMSSmmmm(currentTime - startTime) + "!");
+                        winMessage.setHorizontalAlignment(JLabel.CENTER);
                         winMessage.setFont(Card.getEnglishFont(80));
                         winMessage.setSize(getSize());
-                        add(winMessage, JLayeredPane.MODAL_LAYER, 0);
+                        JPanel modalPanel = (JPanel) getComponentsInLayer(JLayeredPane.MODAL_LAYER)[0];
+                        modalPanel.add(winMessage, BorderLayout.CENTER);
+                        resetButton.setEnabled(true);
                     }
                 }
             } else {
-                firstCell.setBackground(Color.RED);
-                e.getComponent().setBackground(Color.RED);
-                firstCells.add(null);
+                firstCell.setBackground(MatchCell.incorrect);
+                e.getComponent().setBackground(MatchCell.incorrect);
                 MatchCell finalFirstCell = firstCell;
-                CompletableFuture.runAsync(() -> {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(150);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    finalFirstCell.setBackground(Color.BLACK);
-                    e.getComponent().setBackground(Color.BLACK);
+                Timer timer = new Timer(100, ae -> {
+                    finalFirstCell.setBackground(MatchCell.regular);
+                    e.getComponent().setBackground(MatchCell.regular);
+                    ChineseFlashcards.mainWindow.revalidate();
+                    ChineseFlashcards.mainWindow.repaint();
                 });
+                timer.setRepeats(false);
+                timer.start();
+                firstCells.add(null);
             }
         }
     }
@@ -170,5 +196,49 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         ArrayList<Card> copy = new ArrayList<>(list);
         Collections.shuffle(copy);
         return copy.subList(0, n);
+    }
+
+    public static void fadeComponent(MatchCell c) {
+        c.setBackground(MatchCell.correct);
+        c.setBorder(null);
+        AtomicInteger counter = new AtomicInteger(255);
+        Timer timer = new Timer(1, ae -> {
+            if (counter.get() > 0) {
+                c.getLabel().setForeground(new Color(MatchCell.textColor.getRed(), MatchCell.textColor.getGreen(), MatchCell.textColor.getBlue(), counter.get()));
+                c.setBackground(new Color(MatchCell.correct.getRed(), MatchCell.correct.getGreen(), MatchCell.correct.getRed(), counter.get()));
+                ChineseFlashcards.mainWindow.revalidate();
+                ChineseFlashcards.mainWindow.repaint();
+                counter.getAndAdd(-10);
+            } else if (counter.get() == -5) {
+                c.setVisible(false);
+                ((Timer) ae.getSource()).stop();
+            }
+        });
+        timer.start();
+    }
+
+    public static String formatToHHMMSSmmmm(long time) {
+        return String.format("%02d:%02d:%02d.%03d",
+                TimeUnit.MILLISECONDS.toHours(time),
+                TimeUnit.MILLISECONDS.toMinutes(time) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)),
+                TimeUnit.MILLISECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)),
+                time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
+        );
+    }
+
+    public void addMatchCells(Set set, JPanel matchGrid, List<MatchCell> matchCells) {
+        matchGrid.removeAll();
+        Random rand = new Random();
+        pickNRandomCards(set.getCards(), 12).forEach(card -> {
+            int firstLanguage = rand.nextInt(3);
+            matchCells.add(new MatchCell(card, firstLanguage, this));
+            int secondLanguage;
+            do {
+                secondLanguage = rand.nextInt(3);
+            } while (secondLanguage == firstLanguage);
+            matchCells.add(new MatchCell(card, secondLanguage, this));
+        });
+        Collections.shuffle(matchCells);
+        matchCells.forEach(matchGrid::add);
     }
 }

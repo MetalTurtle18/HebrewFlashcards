@@ -122,8 +122,4 @@ public class MainWindow extends JFrame {
         root.add(matchPanel, "match");
         cardLayout.show(root, "match");
     }
-
-    public Dimension getCardLayoutSize() {
-        return cardLayout.preferredLayoutSize(this);
-    }
 }

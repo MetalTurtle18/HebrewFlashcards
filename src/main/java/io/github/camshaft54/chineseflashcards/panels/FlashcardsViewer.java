@@ -117,7 +117,7 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         bottomToolbar.add(rightButton);
         bottomToolbar.add(Box.createHorizontalStrut(10));
         bottomToolbar.add(starButton);
-        bottomToolbar.add(Box.createHorizontalStrut(10));
+        bottomToolbar.add(Box.createHorizontalGlue());
         bottomToolbar.add(termSelector);
         bottomToolbar.add(new JLabel("->"));
         bottomToolbar.add(definitionSelector);

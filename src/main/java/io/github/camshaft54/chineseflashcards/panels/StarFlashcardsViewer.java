@@ -120,7 +120,7 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
         bottomToolbar.add(rightButton);
         bottomToolbar.add(Box.createHorizontalStrut(10));
         bottomToolbar.add(starButton);
-        bottomToolbar.add(Box.createHorizontalStrut(10));
+        bottomToolbar.add(Box.createHorizontalGlue());
         bottomToolbar.add(termSelector);
         bottomToolbar.add(new JLabel("->"));
         bottomToolbar.add(definitionSelector);
