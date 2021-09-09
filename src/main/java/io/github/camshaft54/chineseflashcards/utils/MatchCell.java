@@ -29,7 +29,7 @@ public class MatchCell extends JPanel {
         setBackground(regular);
         setLayout(new BorderLayout());
         add(label, BorderLayout.CENTER);
-        label.setEnabled(false);
+        setEnabled(false);
     }
 
     public Card getCard() {
