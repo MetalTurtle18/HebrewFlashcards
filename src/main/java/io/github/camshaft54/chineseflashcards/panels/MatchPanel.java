@@ -8,6 +8,8 @@ import io.github.camshaft54.chineseflashcards.utils.Set;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MatchPanel extends JLayeredPane implements ActionListener, MouseListener {
+public class MatchPanel extends JLayeredPane implements ActionListener, MouseListener, ChangeListener {
     private final List<MatchCell> firstCells;
     private int score;
     private Timer timer;
@@ -30,12 +32,14 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
     private final JComboBox<String> firstSelector;
     private final JComboBox<String> secondSelector;
     private final JPanel modalPanel;
+    private int matchCellFontSize;
 
     public MatchPanel(Set set) {
         this.set = set;
         firstCells = new ArrayList<>();
         firstCells.add(null);
         score = 0;
+        matchCellFontSize = 30;
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         modalPanel = new JPanel(new BorderLayout());
@@ -48,6 +52,8 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
             public void componentResized(ComponentEvent e) {
                 mainPanel.setSize(getSize());
                 modalPanel.setSize(getSize());
+                ChineseFlashcards.mainWindow.revalidate();
+                ChineseFlashcards.mainWindow.repaint();
             }
         });
         ChineseFlashcards.mainWindow.addWindowStateListener(e -> {
@@ -65,6 +71,10 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         topToolbar.setBorder(new EmptyBorder(10, 10, 0, 10));
         topToolbar.add(exitButton);
 
+        timerLabel = new JLabel("00:00:00");
+        timerLabel.setFont(Card.getEnglishFont(20));
+        timerLabel.setOpaque(true);
+
         // Create bottom toolbar and the buttons for it
         startButton = new JButton("Start");
         startButton.addActionListener(this);
@@ -78,10 +88,13 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         secondSelector.addActionListener(this);
         secondSelector.setToolTipText("Set the second card type, press \"Reset\" button to update");
 
+        JSlider fontSizeSlider = new JSlider(JSlider.HORIZONTAL, 15, 65, matchCellFontSize);
+        fontSizeSlider.addChangeListener(this);
+
         JPanel bottomToolbar = new JPanel();
         bottomToolbar.setLayout(new BoxLayout(bottomToolbar, BoxLayout.X_AXIS));
         bottomToolbar.setBorder(new EmptyBorder(0, 10, 10, 10));
-        bottomToolbar.add(timerLabel = new JLabel("00:00:00"));
+        bottomToolbar.add(timerLabel);
         bottomToolbar.add(Box.createHorizontalStrut(10));
         bottomToolbar.add(startButton);
         bottomToolbar.add(Box.createHorizontalStrut(5));
@@ -90,6 +103,9 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         bottomToolbar.add(firstSelector);
         bottomToolbar.add(new JLabel("->"));
         bottomToolbar.add(secondSelector);
+        bottomToolbar.add(Box.createHorizontalStrut(10));
+        bottomToolbar.add(new JLabel("Font Size:"));
+        bottomToolbar.add(fontSizeSlider);
 
         // Create Match grid panel
         matchGrid = new JPanel();
@@ -97,7 +113,6 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         matchGrid.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         matchCells = new ArrayList<>();
         addMatchCells(set, matchGrid, matchCells);
-
 
         // Add panels to the main panel
         mainPanel.add(topToolbar, BorderLayout.NORTH);
@@ -160,7 +175,7 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
             firstCell.setBackground(MatchCell.partial);
             firstCells.set(firstCells.size() - 1, firstCell);
         } else {
-            if (((MatchCell) e.getComponent()).getCard().equals(firstCell.getCard())) {
+            if (((MatchCell) e.getComponent()).getCard().equals(firstCell.getCard())) { // If user did choose correct card
                 if (((MatchCell) e.getComponent()).getLanguage() == firstCell.getLanguage()) {
                     firstCell.setBackground(MatchCell.regular);
                     ChineseFlashcards.mainWindow.revalidate();
@@ -183,13 +198,16 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
                         secondSelector.setEnabled(true);
                     }
                 }
-            } else {
+            } else { // If user did not choose correct card
                 firstCell.setBackground(MatchCell.incorrect);
                 e.getComponent().setBackground(MatchCell.incorrect);
                 MatchCell finalFirstCell = firstCell;
+                startTime -= 1000; // Add 1 second as penalty for answering incorrectly
+                timerLabel.setBackground(MatchCell.incorrect);
                 Timer timer = new Timer(100, ae -> {
                     finalFirstCell.setBackground(MatchCell.regular);
                     e.getComponent().setBackground(MatchCell.regular);
+                    timerLabel.setBackground(new Color(238, 238, 238)); // default background color
                     ChineseFlashcards.mainWindow.revalidate();
                     ChineseFlashcards.mainWindow.repaint();
                 });
@@ -200,22 +218,15 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         }
     }
 
+    // Listener for font size adjustment
     @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
+    public void stateChanged(ChangeEvent e) {
+        if (e.getSource() instanceof JSlider) {
+            matchCellFontSize = ((JSlider) e.getSource()).getValue();
+            matchCells.forEach(mc -> mc.getLabel().setFont(Card.getFont(mc.getLanguage(), matchCellFontSize)));
+            ChineseFlashcards.mainWindow.revalidate();
+            ChineseFlashcards.mainWindow.repaint();
+        }
     }
 
     public static List<Card> pickNRandomCards(List<Card> list, int n) {
@@ -228,12 +239,10 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         c.setBackground(MatchCell.correct);
         c.setBorder(null);
         AtomicInteger counter = new AtomicInteger(255);
-        Timer timer = new Timer(1, ae -> {
+        Timer timer = new Timer(10, ae -> {
             if (counter.get() > 0) {
                 c.getLabel().setForeground(new Color(MatchCell.textColor.getRed(), MatchCell.textColor.getGreen(), MatchCell.textColor.getBlue(), counter.get()));
                 c.setBackground(new Color(MatchCell.correct.getRed(), MatchCell.correct.getGreen(), MatchCell.correct.getRed(), counter.get()));
-                ChineseFlashcards.mainWindow.revalidate();
-                ChineseFlashcards.mainWindow.repaint();
                 counter.getAndAdd(-10);
             } else if (counter.get() == -5) {
                 c.setVisible(false);
@@ -265,7 +274,7 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         Random rand = new Random();
         pickNRandomCards(set.getCards(), 12).forEach(card -> {
             int selectedFirstLanguage = (firstLanguage == -1) ? rand.nextInt(3) : firstLanguage;
-            matchCells.add(new MatchCell(card, selectedFirstLanguage, this));
+            matchCells.add(new MatchCell(card, selectedFirstLanguage, this, matchCellFontSize));
 
             int selectedSecondLanguage;
             if (secondLanguage == -1) { // If second card is meant to be random, make sure it does not match the first card.
@@ -275,14 +284,14 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
             } else {
                 selectedSecondLanguage = secondLanguage;
             }
-            matchCells.add(new MatchCell(card, selectedSecondLanguage, this));
+            matchCells.add(new MatchCell(card, selectedSecondLanguage, this, matchCellFontSize));
         });
         Collections.shuffle(matchCells);
         matchCells.forEach(matchGrid::add);
         JLabel clickStartMessage = new JLabel("Click start to begin!");
         clickStartMessage.setHorizontalAlignment(JLabel.CENTER);
         clickStartMessage.setFont(Card.getEnglishFont(80));
-        clickStartMessage.setSize(getSize());
+        clickStartMessage.setForeground(Color.WHITE);
         JPanel clickStartPanel = new JPanel(new BorderLayout());
         clickStartPanel.setBackground(new Color(0, 0, 0, 100));
         clickStartPanel.add(clickStartMessage, BorderLayout.CENTER);
@@ -290,5 +299,24 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         modalPanel.add(Box.createVerticalStrut(44), BorderLayout.NORTH);
         modalPanel.add(Box.createVerticalStrut(44), BorderLayout.SOUTH);
         return true;
+    }
+
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
     }
 }

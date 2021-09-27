@@ -16,14 +16,15 @@ public class MatchCell extends JPanel {
     private final int language;
     private final JLabel label;
 
-    public MatchCell(Card card, int language, MouseListener mouseListener) {
+    public MatchCell(Card card, int language, MouseListener mouseListener, int fontSize) {
         this.card = card;
         this.language = language;
 
         label = new JLabel(card.getLanguageEntry(language));
-        label.setFont(Card.getFont(language, 30));
+        label.setFont(Card.getFont(language, fontSize));
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setName("tile");
+
         setBorder(BorderFactory.createLineBorder(border, 2));
         addMouseListener(mouseListener);
         setBackground(regular);

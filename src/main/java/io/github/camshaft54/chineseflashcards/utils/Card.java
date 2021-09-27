@@ -1,7 +1,5 @@
 package io.github.camshaft54.chineseflashcards.utils;
 
-import io.github.camshaft54.chineseflashcards.panels.Flashcard;
-
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -13,6 +11,9 @@ public class Card {
     private String chinese;
     private String pinyin;
     private String english;
+    private static final Font englishFont = new Font("Arial", Font.PLAIN, 30);
+    private static final Font pinyinFont = new Font("Arial", Font.PLAIN, 30);
+    private static final Font chineseFont = new Font("KaiTi", Font.PLAIN, 30);
 
     public ArrayList<String> getStars() {
         return stars;
@@ -63,15 +64,15 @@ public class Card {
     }
 
     public static Font getChineseFont(int size) {
-        return new Font("KaiTi", Font.PLAIN, size);
+        return chineseFont.deriveFont((float) size);
     }
 
     public static Font getEnglishFont(int size) {
-        return new Font("Arial", Font.PLAIN, size);
+        return englishFont.deriveFont((float) size);
     }
 
     public static Font getPinyinFont(int size) {
-        return new Font("Arial", Font.PLAIN, size);
+        return pinyinFont.deriveFont((float) size);
     }
 
     public static Font getFont(int language, int size) {

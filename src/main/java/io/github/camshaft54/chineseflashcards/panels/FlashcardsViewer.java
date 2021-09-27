@@ -1,6 +1,7 @@
 package io.github.camshaft54.chineseflashcards.panels;
 
 import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
+import io.github.camshaft54.chineseflashcards.utils.Flashcard;
 import io.github.camshaft54.chineseflashcards.utils.Set;
 
 import javax.swing.*;

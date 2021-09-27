@@ -1,6 +1,4 @@
-package io.github.camshaft54.chineseflashcards.panels;
-
-import io.github.camshaft54.chineseflashcards.utils.Card;
+package io.github.camshaft54.chineseflashcards.utils;
 
 import javax.swing.*;
 import java.awt.*;
