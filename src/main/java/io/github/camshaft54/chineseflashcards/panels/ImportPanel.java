@@ -171,7 +171,11 @@ public class ImportPanel extends JPanel implements ActionListener {
             set.setCards(cards);
             set.setName(nameTextField.getText());
             try {
-                ChineseFlashcards.yaml.dump(set, new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + nameTextField.getText() + ".yaml"), StandardCharsets.UTF_16));
+                FileOutputStream fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + nameTextField.getText() + ".yaml");
+                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
+                ChineseFlashcards.yaml.dump(set, osw);
+                fos.close();
+                osw.close();
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(this, "Error saving file!", "File Save Error", JOptionPane.ERROR_MESSAGE);
             }

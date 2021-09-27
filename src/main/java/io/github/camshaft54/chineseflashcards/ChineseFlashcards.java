@@ -69,6 +69,7 @@ public class ChineseFlashcards {
                     Set set = yaml.load(fs);
                     set.setFilename(name);
                     sets.put(set.getName(), set);
+                    fs.close();
                 } catch (IOException e) {
                     System.out.println("Error loading sets!\nExitingCFS");
                     return;
@@ -119,8 +120,12 @@ public class ChineseFlashcards {
     public static void saveSets() {
         sets.forEach((name, set) -> {
             try {
-                yaml.dump(set, new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + set.getFilename()), StandardCharsets.UTF_16));
-            } catch (FileNotFoundException e) {
+                FileOutputStream fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + set.getFilename());
+                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
+                yaml.dump(set, osw);
+                fos.close();
+                osw.close();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         });

@@ -11,10 +11,13 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -27,6 +30,8 @@ public class EditorPanel extends JPanel implements ActionListener {
     JButton saveButton;
     JLabel cardCounter;
     HashMap<Integer, JPanel> cards;
+    String setName;
+    String setFileName;
     int idTracker = 0;
 
     /**
@@ -34,6 +39,8 @@ public class EditorPanel extends JPanel implements ActionListener {
      */
     public EditorPanel() {
         cards = new HashMap<>();
+        setName = "";
+        setFileName = "";
 
         setLayout(new BorderLayout());
 
@@ -49,6 +56,8 @@ public class EditorPanel extends JPanel implements ActionListener {
      */
     public EditorPanel(Set selectedSet) {
         cards = new HashMap<>();
+        setName = selectedSet.getName();
+        setFileName = selectedSet.getFilename();
 
         setLayout(new BorderLayout());
         setupToolbarAndScrollPane();
@@ -176,7 +185,16 @@ public class EditorPanel extends JPanel implements ActionListener {
             set.getCards().add(card);
         }
         try {
-            ChineseFlashcards.yaml.dump(set, new OutputStreamWriter(new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + name + ".yaml"), StandardCharsets.UTF_16));
+            FileOutputStream fos;
+            if (setFileName.equals("")) {
+                fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + name + ".yaml");
+            } else {
+                fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + setFileName);
+            }
+            OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
+            ChineseFlashcards.yaml.dump(set, osw);
+            fos.close();
+            osw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -203,6 +221,11 @@ public class EditorPanel extends JPanel implements ActionListener {
             saveButton.setEnabled(cards.size() != 0);
             cardCounter.setText(cards.size() + " card" + ((cards.size() != 1) ? "s" : ""));
         } else if (e.getActionCommand().equals("Save")) {
+            if (!setName.equals("")) {
+                saveSet(setName);
+                JOptionPane.showMessageDialog(this, "Saved \"" + setName + "\" to file!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             String proposedName = "";
             while (proposedName != null) {
                 proposedName = JOptionPane.showInputDialog("Enter a name for this set:"); // Get input from user for set name
