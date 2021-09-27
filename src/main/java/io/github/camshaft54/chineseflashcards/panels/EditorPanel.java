@@ -210,13 +210,15 @@ public class EditorPanel extends JPanel implements ActionListener {
                     // The stream can only accept objects that are effectively final, so a "final" version of proposedName must be created
                     String finalProposedName = proposedName.trim();
                     // If proposed name does not match other sets' name or filename, save the set and alert the user
-                    if (ChineseFlashcards.sets.containsKey(finalProposedName) && ChineseFlashcards.sets.values().stream().noneMatch(set -> set.getFilename().equals(finalProposedName))) {
+                    if (!ChineseFlashcards.sets.containsKey(finalProposedName) && ChineseFlashcards.sets.values().stream().noneMatch(set -> set.getFilename().equals(finalProposedName))) {
                         saveSet(proposedName.trim());
                         JOptionPane.showMessageDialog(this, "Saved \"" + proposedName.trim() + "\" to file!", "Success", JOptionPane.INFORMATION_MESSAGE);
                         return;
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Set name must not match another set name. Please try again.", "Invalid Name", JOptionPane.WARNING_MESSAGE);
                     }
                 } else if (proposedName != null) {
-                    JOptionPane.showMessageDialog(this, "Invalid Set Name! please try again", "Invalid Name", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Invalid Set Name. Please try again.", "Invalid Name", JOptionPane.WARNING_MESSAGE);
                 }
             }
         } else if (e.getActionCommand().startsWith("genPinyin ")) {
