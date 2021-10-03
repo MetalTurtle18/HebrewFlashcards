@@ -4,7 +4,6 @@ import io.github.camshaft54.chineseflashcards.utils.Card;
 import io.github.camshaft54.chineseflashcards.utils.DictEntry;
 import io.github.camshaft54.chineseflashcards.utils.Set;
 import io.github.camshaft54.chineseflashcards.windows.MainWindow;
-import org.pushingpixels.substance.api.skin.SubstanceGraphiteChalkLookAndFeel;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;

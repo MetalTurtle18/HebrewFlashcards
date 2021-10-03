@@ -184,20 +184,22 @@ public class EditorPanel extends JPanel implements ActionListener {
             card.setEnglish(english);
             set.getCards().add(card);
         }
-        try {
-            FileOutputStream fos;
-            if (setFileName.equals("")) {
-                fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + name + ".yaml");
-            } else {
-                fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + setFileName);
-            }
-            OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
-            ChineseFlashcards.yaml.dump(set, osw);
-            fos.close();
-            osw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        set.setFilename((setFileName == null) ? name + ".yaml" : setFileName);
+        ChineseFlashcards.sets.put(set.getName(), set);
+//        try {
+//            FileOutputStream fos;
+//            if (setFileName.equals("")) {
+//                fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + name + ".yaml");
+//            } else {
+//                fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + setFileName);
+//            }
+//            OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
+//            ChineseFlashcards.yaml.dump(set, osw);
+//            osw.close();
+//            fos.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         ChineseFlashcards.mainWindow.showWelcomePanel();
     }
 
