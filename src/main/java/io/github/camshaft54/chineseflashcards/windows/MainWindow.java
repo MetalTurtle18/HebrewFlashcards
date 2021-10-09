@@ -22,7 +22,7 @@ public class MainWindow extends JFrame {
     public MainWindow() throws HeadlessException {
         setTitle("CFS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(675, 500);
+        setSize(675, 520);
         setVisible(true);
 
         // Set custom image as icon
@@ -109,6 +109,10 @@ public class MainWindow extends JFrame {
             case "Match" -> {
                 if (matchPanel != null) {
                     root.remove(matchPanel);
+                }
+                if (set.getCards().size() < MatchPanel.cellCount) {
+                    JOptionPane.showMessageDialog(this, "The Match game requires at least 12 cards in the set to play.", "Match Game", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
                 matchPanel = new MatchPanel(set);
                 root.add(matchPanel, "match");

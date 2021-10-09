@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatchPanel extends JLayeredPane implements ActionListener, MouseListener, ChangeListener {
+    public static final int cellCount = 12;
     private final List<MatchCell> firstCells;
     private int score;
     private Timer timer;
@@ -100,8 +101,9 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         bottomToolbar.add(Box.createHorizontalStrut(5));
         bottomToolbar.add(resetButton);
         bottomToolbar.add(Box.createHorizontalGlue());
+        bottomToolbar.add(new JLabel("Languages: "));
         bottomToolbar.add(firstSelector);
-        bottomToolbar.add(new JLabel("->"));
+        bottomToolbar.add(new JLabel(" and "));
         bottomToolbar.add(secondSelector);
         bottomToolbar.add(Box.createHorizontalStrut(10));
         bottomToolbar.add(new JLabel("Font Size:"));
@@ -272,7 +274,7 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
 
         matchGrid.removeAll();
         Random rand = new Random();
-        pickNRandomCards(set.getCards(), 12).forEach(card -> {
+        pickNRandomCards(set.getCards(), cellCount).forEach(card -> {
             int selectedFirstLanguage = (firstLanguage == -1) ? rand.nextInt(3) : firstLanguage;
             matchCells.add(new MatchCell(card, selectedFirstLanguage, this, matchCellFontSize));
 

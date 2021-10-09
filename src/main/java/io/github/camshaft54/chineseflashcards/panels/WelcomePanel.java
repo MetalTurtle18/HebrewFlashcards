@@ -4,11 +4,13 @@ import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
 import io.github.camshaft54.chineseflashcards.utils.Card;
 import io.github.camshaft54.chineseflashcards.utils.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,13 +30,15 @@ public class WelcomePanel extends JPanel implements ActionListener {
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JLabel welcomeText1 = new JLabel("Welcome to the");
         Font welcomeFont = new Font("Arial Nova", Font.PLAIN, 38);
-        welcomeText1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        welcomeText1.setFont(welcomeFont);
-        JLabel welcomeText2 = new JLabel("Chinese Flashcard System!");
-        welcomeText2.setAlignmentX(Component.CENTER_ALIGNMENT);
-        welcomeText2.setFont(welcomeFont);
+        JLabel welcomeText = new JLabel("<html>Chinese Flashcard System<br/><p style='font-size:12pt'>Version 1.1.0</p></html>");
+        welcomeText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        welcomeText.setFont(welcomeFont);
+        try {
+            welcomeText.setIcon(new ImageIcon(ImageIO.read(ChineseFlashcards.class.getResourceAsStream("/assets/CFSLarge.png"))));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         JLabel setMenuInfo = new JLabel("Select Set:");
         setMenuInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -87,8 +91,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
         selectGameButton.setEnabled(false);
         editButton.setEnabled(false);
 
-        add(welcomeText1);
-        add(welcomeText2);
+        add(welcomeText);
         add(Box.createVerticalStrut(5));
         add(setMenuInfo);
         add(Box.createVerticalStrut(5));

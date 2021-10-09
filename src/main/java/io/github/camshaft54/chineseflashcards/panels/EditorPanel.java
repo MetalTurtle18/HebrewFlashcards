@@ -11,14 +11,6 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -118,6 +110,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         JButton deleteButton = new JButton("✕");
         deleteButton.setActionCommand("x " + idTracker);
         deleteButton.addActionListener(this);
+        deleteButton.setFocusable(false);
         chineseBox.add(new JLabel("Chinese:"));
         chineseBox.add(Box.createHorizontalStrut(5));
         chineseBox.add(chineseTextField);
@@ -131,6 +124,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         JButton genPinyinButton = new JButton("Generate Pinyin from Chinese");
         genPinyinButton.setActionCommand("genPinyin " + idTracker);
         genPinyinButton.addActionListener(this);
+        genPinyinButton.setFocusable(false);
         pinyinBox.add(new JLabel("Pinyin:"));
         pinyinBox.add(Box.createHorizontalStrut(14));
         pinyinBox.add(pinyinTextField);
@@ -144,6 +138,7 @@ public class EditorPanel extends JPanel implements ActionListener {
         JButton genEnglishButton = new JButton("Generate English from Chinese");
         genEnglishButton.setActionCommand("genEnglish " + idTracker);
         genEnglishButton.addActionListener(this);
+        genEnglishButton.setFocusable(false);
         englishBox.add(new JLabel("English:"));
         englishBox.add(Box.createHorizontalStrut(8));
         englishBox.add(englishTextField);
@@ -184,7 +179,7 @@ public class EditorPanel extends JPanel implements ActionListener {
             card.setEnglish(english);
             set.getCards().add(card);
         }
-        set.setFilename((setFileName == null) ? name + ".yaml" : setFileName);
+        set.setFilename((setFileName != null && !setFileName.equals("")) ? setFileName : name + ".yaml");
         ChineseFlashcards.sets.put(set.getName(), set);
 //        try {
 //            FileOutputStream fos;
@@ -214,6 +209,10 @@ public class EditorPanel extends JPanel implements ActionListener {
         } else if (e.getActionCommand().equals("New Card")) {
             addNewCard();
             saveButton.setEnabled(cards.size() != 0);
+            // Scroll to bottom to show new card
+            ChineseFlashcards.mainWindow.revalidate();
+            ChineseFlashcards.mainWindow.repaint();
+            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
         } else if (e.getActionCommand().startsWith("x ")) {
             int index = Integer.parseInt(e.getActionCommand().replace("x ", ""));
             editor.remove(cards.get(index));
