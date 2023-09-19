@@ -1,8 +1,9 @@
-package io.github.camshaft54.chineseflashcards.panels;
+package com.dekolis.hebrewflashcards.panels;
 
-import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
-import io.github.camshaft54.chineseflashcards.utils.Flashcard;
-import io.github.camshaft54.chineseflashcards.utils.Set;
+import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.utils.Flashcard;
+import com.dekolis.hebrewflashcards.utils.Set;
+import com.dekolis.hebrewflashcards.windows.SetSettingsPopup;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -17,25 +18,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FlashcardsViewer extends JPanel implements ActionListener, MouseListener {
+/**
+ * This class is the same as FlashcardsViewer except for the following differences:
+ * - Displays current stars for a flashcard
+ * - Removes cards that are not starred when the reset button is pressed
+ * - Adds settings button with SetSettingsPopup
+ */
+public class StarFlashcardsViewer extends JPanel implements ActionListener, MouseListener {
     public static boolean isVisible;
 
     private final JPanel flashcardPanel;
     private final CardLayout cardLayout;
     private final ArrayList<Flashcard> flashcards;
+    private final Set selectedSet;
     private JLabel cardCounter;
     private JButton leftButton;
     private JButton rightButton;
     private JButton starButton;
+    private JLabel cardStarsText;
     private int currentFlashcard;
     private int termType;
     private int definitionType;
 
-    /**
-     * Initializes a Flashcard Viewer with a toolbar and loads the set specified.
-     * @param selectedSet the set to be loaded into the viewer.
-     */
-    public FlashcardsViewer(Set selectedSet) {
+    public StarFlashcardsViewer(Set selectedSet) {
+        this.selectedSet = selectedSet;
         currentFlashcard = 0;
         isVisible = true;
         termType = Flashcard.CHINESE;
@@ -53,7 +59,7 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         flashcardPanel.setBorder(new CompoundBorder(margin, lineBorder));
         add(flashcardPanel, BorderLayout.CENTER);
 
-        // Add all the flashcards panels to the inner flashcard panel
+        // Add all of the flashcards panels to the inner flashcard panel
         flashcards = new ArrayList<>();
         AtomicInteger i = new AtomicInteger();
         selectedSet.getCards().forEach(card -> {
@@ -72,9 +78,6 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         resetFlashcards();
     }
 
-    /**
-     * Adds the top and bottom toolbars for the viewer.
-     */
     private void addToolbars() {
         // Create previous and next buttons for flashcards, card counter, and reset button
         cardCounter = new JLabel((currentFlashcard + 1) + " / " + flashcards.size());
@@ -124,11 +127,17 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         bottomToolbar.add(definitionSelector);
         add(bottomToolbar, BorderLayout.SOUTH);
 
-        // Create buttons for top toolbar
+        // Create buttons and text for top toolbar
         JButton exitButton = new JButton("Back");
         exitButton.addActionListener(this);
         JButton shuffleButton = new JButton("Shuffle");
         shuffleButton.addActionListener(this);
+        // This button opens the SetSettingsPopup
+        JButton settingsButton = new JButton("Settings");
+        settingsButton.addActionListener(this);
+        // This label displays the stars that a card has
+        cardStarsText = new JLabel("Current Stars: None");
+
 
         // Create and add top toolbar
         JPanel topToolbar = new JPanel();
@@ -137,12 +146,13 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         topToolbar.add(exitButton);
         topToolbar.add(Box.createHorizontalStrut(10));
         topToolbar.add(shuffleButton);
+        topToolbar.add(Box.createHorizontalStrut(10));
+        topToolbar.add(settingsButton);
+        topToolbar.add(Box.createHorizontalGlue());
+        topToolbar.add(cardStarsText);
         add(topToolbar, BorderLayout.NORTH);
     }
 
-    /**
-     * Registers the arrow key and s key shortcuts using InputMap and ActionMap.
-     */
     private void registerShortcuts() {
         InputMap map = leftButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         map.put(KeyStroke.getKeyStroke("LEFT"), "previous");
@@ -175,28 +185,18 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         starButton.getActionMap().put("star", keyAction);
     }
 
-    /**
-     * Increments the current flashcard by 1.
-     */
     public void incrementFlashcard() {
         cardLayout.next(flashcardPanel);
         currentFlashcard++;
         refreshFlashcard();
     }
 
-    /**
-     * Decrements the current flashcard by 1.
-     */
     public void decrementFlashcard() {
         cardLayout.previous(flashcardPanel);
         currentFlashcard--;
         refreshFlashcard();
     }
 
-    /**
-     * Refreshes the current flashcard by changing the side, changing the functionality of the buttons,
-     * adjusting the card counter, or updating the stars if necessary.
-     */
     public void refreshFlashcard() {
         flashcards.get(currentFlashcard).showSide(termType);
         rightButton.setEnabled(currentFlashcard < flashcards.size() - 1 && flashcards.size() != 1);
@@ -207,20 +207,31 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         } else {
             starButton.setText("★");
         }
+        // Update current stars
+        cardStarsText.setText("Current Stars: " + flashcards.get(currentFlashcard).getStarsDisplayText());
     }
 
-    /**
-     * Resets the flashcard viewer back to the first card.
-     */
     public void resetFlashcards() {
+        // Remove any cards that are not starred.
+        for (int i = 0; i < flashcards.size(); i++) {
+            if (!flashcards.get(i).isStarred()) {
+                flashcardPanel.remove(flashcards.get(i));
+                flashcards.remove(flashcards.get(i));
+                i--;
+            }
+        }
+        // If there are no cards left in the set, exit.
+        if (flashcards.size() == 0) {
+            JOptionPane.showMessageDialog(this, "There are no starred cards remaining in this set!", "No Starred Cards", JOptionPane.WARNING_MESSAGE);
+            ChineseFlashcards.mainWindow.showWelcomePanel();
+            isVisible = false;
+            return;
+        }
         cardLayout.first(flashcardPanel);
         currentFlashcard = 0;
         refreshFlashcard();
     }
 
-    /**
-     * Flips the current flashcard to the definition or term depending on its current state.
-     */
     public void flipFlashcard() {
         if (flashcards.get(currentFlashcard).getCurrentSide() == termType) {
             flashcards.get(currentFlashcard).showSide(definitionType);
@@ -229,9 +240,6 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         }
     }
 
-    /**
-     * Adds or removes a star for the current language configuration depending on the current state.
-     */
     public void toggleStar() {
         if (!flashcards.get(currentFlashcard).hasStar(termType, definitionType)) {
             flashcards.get(currentFlashcard).setStar(termType, definitionType);
@@ -240,12 +248,9 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
             flashcards.get(currentFlashcard).removeStar(termType, definitionType);
             starButton.setText("☆");
         }
+        refreshFlashcard();
     }
 
-    /**
-     * When the user changes the term for the viewer, this method updates the term of the flashcard accordingly.
-     * @param termType the type of term to change the old term to.
-     */
     public void updateTerm(String termType) {
         switch (termType) {
             case "English" -> this.termType = Flashcard.ENGLISH;
@@ -260,10 +265,6 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         }
     }
 
-    /**
-     * When the user changes the definition for the viewer, this method updates the definition of the flashcard accordingly.
-     * @param definitionType the type of definition to change the old definition to.
-     */
     public void updateDefinition(String definitionType) {
         switch (definitionType) {
             case "English" -> this.definitionType = Flashcard.ENGLISH;
@@ -278,10 +279,6 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         }
     }
 
-    /**
-     * Shuffles the flashcards and updates the order of the flashcards in the panel. This does not affect the order of the cards
-     * in the Set.
-     */
     public void shuffleSet() {
         // Shuffle flashcards
         Collections.shuffle(flashcards);
@@ -301,7 +298,6 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JComboBox && ((JComboBox) e.getSource()).getSelectedItem() != null) {
-            // Updates definition or term to new selection.
             switch (((JComboBox) e.getSource()).getName()) {
                 case "termSelector" -> updateTerm((String) ((JComboBox) e.getSource()).getSelectedItem());
                 case "definitionSelector" -> updateDefinition((String) ((JComboBox) e.getSource()).getSelectedItem());
@@ -316,6 +312,8 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
                 isVisible = false;
                 ChineseFlashcards.mainWindow.showWelcomePanel();
             }
+            // Opens SetSettingsPopup
+            case "Settings" -> new SetSettingsPopup(selectedSet, flashcards.get(currentFlashcard), termType + " " + definitionType);
             case "Shuffle" -> shuffleSet();
         }
     }

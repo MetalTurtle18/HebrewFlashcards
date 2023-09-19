@@ -1,9 +1,9 @@
-package io.github.camshaft54.chineseflashcards;
+package com.dekolis.hebrewflashcards;
 
-import io.github.camshaft54.chineseflashcards.utils.Card;
-import io.github.camshaft54.chineseflashcards.utils.DictEntry;
-import io.github.camshaft54.chineseflashcards.utils.Set;
-import io.github.camshaft54.chineseflashcards.windows.MainWindow;
+import com.dekolis.hebrewflashcards.utils.Card;
+import com.dekolis.hebrewflashcards.utils.DictEntry;
+import com.dekolis.hebrewflashcards.utils.Set;
+import com.dekolis.hebrewflashcards.windows.MainWindow;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -109,7 +109,7 @@ public class ChineseFlashcards {
     public static void setupSetsFolder() {
         try {
             String jarLocation = new File(ChineseFlashcards.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-            setsFolderLocation = jarLocation.substring(0, jarLocation.lastIndexOf("\\")) + "\\sets";
+            setsFolderLocation = jarLocation.substring(0, jarLocation.lastIndexOf("/")) + "/sets";
             Files.createDirectories(Path.of(setsFolderLocation));
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();

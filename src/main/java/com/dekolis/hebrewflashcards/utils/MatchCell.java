@@ -1,4 +1,4 @@
-package io.github.camshaft54.chineseflashcards.utils;
+package com.dekolis.hebrewflashcards.utils;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package io.github.camshaft54.chineseflashcards.utils;
+package com.dekolis.hebrewflashcards.utils;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -1,9 +1,9 @@
-package io.github.camshaft54.chineseflashcards.panels;
+package com.dekolis.hebrewflashcards.panels;
 
-import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
-import io.github.camshaft54.chineseflashcards.utils.Card;
-import io.github.camshaft54.chineseflashcards.utils.DndJList;
-import io.github.camshaft54.chineseflashcards.utils.Set;
+import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.utils.DndJList;
+import com.dekolis.hebrewflashcards.utils.Set;
+import com.dekolis.hebrewflashcards.utils.Card;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;

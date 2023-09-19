@@ -1,8 +1,9 @@
-package io.github.camshaft54.chineseflashcards.windows;
+package com.dekolis.hebrewflashcards.windows;
 
-import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.panels.*;
 import io.github.camshaft54.chineseflashcards.panels.*;
-import io.github.camshaft54.chineseflashcards.utils.Set;
+import com.dekolis.hebrewflashcards.utils.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

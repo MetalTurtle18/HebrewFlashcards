@@ -1,4 +1,4 @@
-package io.github.camshaft54.chineseflashcards.utils;
+package com.dekolis.hebrewflashcards.utils;
 
 /**
  * Represents each entry in the dictionary. This class simply holds the pinyin and and english for the entry in the dict

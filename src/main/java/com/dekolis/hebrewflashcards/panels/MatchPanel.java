@@ -1,9 +1,9 @@
-package io.github.camshaft54.chineseflashcards.panels;
+package com.dekolis.hebrewflashcards.panels;
 
-import io.github.camshaft54.chineseflashcards.ChineseFlashcards;
-import io.github.camshaft54.chineseflashcards.utils.Card;
-import io.github.camshaft54.chineseflashcards.utils.MatchCell;
-import io.github.camshaft54.chineseflashcards.utils.Set;
+import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.utils.Set;
+import com.dekolis.hebrewflashcards.utils.Card;
+import com.dekolis.hebrewflashcards.utils.MatchCell;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -29,13 +29,13 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
     private final JButton resetButton;
     private final List<MatchCell> matchCells;
     private final JPanel matchGrid;
-    private final Set set;
+    private final com.dekolis.hebrewflashcards.utils.Set set;
     private final JComboBox<String> firstSelector;
     private final JComboBox<String> secondSelector;
     private final JPanel modalPanel;
     private int matchCellFontSize;
 
-    public MatchPanel(Set set) {
+    public MatchPanel(com.dekolis.hebrewflashcards.utils.Set set) {
         this.set = set;
         firstCells = new ArrayList<>();
         firstCells.add(null);
