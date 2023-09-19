@@ -86,6 +86,17 @@ public class WelcomePanel extends JPanel implements ActionListener {
         importButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         importButton.addActionListener(this);
 
+        JButton fontButton = new JButton("Font: print (click to change)");
+        fontButton.setFont(Card.getEnglishFont(20));
+        fontButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        fontButton.addActionListener(e -> {
+            if (Card.toggleHebrewFontScriptPrint()) {
+                fontButton.setText("Font: print (click to change)");
+            } else {
+                fontButton.setText("Font: script (click to change)");
+            }
+        });
+
         showStarredCards.setEnabled(false);
         startButton.setEnabled(false);
         selectGameButton.setEnabled(false);
@@ -108,6 +119,8 @@ public class WelcomePanel extends JPanel implements ActionListener {
         add(newButton);
         add(Box.createVerticalStrut(10));
         add(importButton);
+        add(Box.createVerticalStrut(10));
+        add(fontButton);
     }
 
     /**

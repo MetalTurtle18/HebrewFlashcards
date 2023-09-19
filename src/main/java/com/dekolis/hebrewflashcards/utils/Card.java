@@ -13,7 +13,7 @@ public class Card {
     private String english;
     private static final Font englishFont = new Font("Arial", Font.PLAIN, 30);
     private static final Font transliterationFont = new Font("Arial", Font.PLAIN, 30);
-    private static final Font chineseFont = new Font("KaiTi", Font.PLAIN, 30); // TODO: find font and implement changing from print to script fonts
+    private static Font hebrewFont = new Font("Arial Hebrew", Font.PLAIN, 30);
 
     public ArrayList<String> getStars() {
         return stars;
@@ -64,7 +64,22 @@ public class Card {
     }
 
     public static Font getHebrewFont(int size) {
-        return chineseFont.deriveFont((float) size);
+        return hebrewFont.deriveFont((float) size);
+    }
+
+    /**
+     * Changes the Hebrew font from print to script or vice versa
+     *
+     * @return true if font was changed to print, false if font was changed to script
+     */
+    public static boolean toggleHebrewFontScriptPrint() {
+        if (hebrewFont.getName().equals("Arial Hebrew")) {
+            hebrewFont = new Font("Dana Yad AlefAlefAlef", Font.PLAIN, 30);
+            return false;
+        } else {
+            hebrewFont = new Font("Arial Hebrew", Font.PLAIN, 30);
+            return true;
+        }
     }
 
     public static Font getEnglishFont(int size) {
