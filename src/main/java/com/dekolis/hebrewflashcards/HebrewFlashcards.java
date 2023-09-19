@@ -120,7 +120,7 @@ public class HebrewFlashcards {
         sets.forEach((name, set) -> {
             try {
                 FileOutputStream fos = new FileOutputStream(HebrewFlashcards.setsFolderLocation + "/" + set.getFilename());
-                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16); // TODO: different encoding?
+                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
                 yaml.dump(set, osw);
                 fos.close();
                 osw.close();

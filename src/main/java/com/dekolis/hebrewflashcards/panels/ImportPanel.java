@@ -172,7 +172,7 @@ public class ImportPanel extends JPanel implements ActionListener {
             set.setName(nameTextField.getText());
             try {
                 FileOutputStream fos = new FileOutputStream(HebrewFlashcards.setsFolderLocation + "/" + nameTextField.getText() + ".yaml");
-                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16); // TODO: charset
+                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
                 HebrewFlashcards.yaml.dump(set, osw);
                 fos.close();
                 osw.close();
