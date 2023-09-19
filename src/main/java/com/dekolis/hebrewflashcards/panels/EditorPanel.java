@@ -1,6 +1,6 @@
 package com.dekolis.hebrewflashcards.panels;
 
-import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.HebrewFlashcards;
 import com.dekolis.hebrewflashcards.utils.Card;
 import com.dekolis.hebrewflashcards.utils.Set;
 
@@ -57,8 +57,8 @@ public class EditorPanel extends JPanel implements ActionListener {
             addNewCard();
             Card currCard = selectedSet.getCards().get(i);
             JPanel cardPanel = cards.get(cards.size()-1);
-            ((JTextField) ((Box) cardPanel.getComponent(0)).getComponent(2)).setText(currCard.getChinese());
-            ((JTextField) ((Box) cardPanel.getComponent(2)).getComponent(2)).setText(currCard.getPinyin());
+            ((JTextField) ((Box) cardPanel.getComponent(0)).getComponent(2)).setText(currCard.getHebrew());
+            ((JTextField) ((Box) cardPanel.getComponent(2)).getComponent(2)).setText(currCard.getTransliteration());
             ((JTextField) ((Box) cardPanel.getComponent(4)).getComponent(2)).setText(currCard.getEnglish());
         }
     }
@@ -103,39 +103,39 @@ public class EditorPanel extends JPanel implements ActionListener {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(new CompoundBorder(new LineBorder(new Color(192, 192, 192), 2), new EmptyBorder(10, 10, 10, 10)));
 
-        // Add the chinese text box and "X" button for closing window
-        Box chineseBox = new Box(BoxLayout.X_AXIS);
-        JTextField chineseTextField = new JTextField(20);
-        chineseTextField.setMaximumSize(chineseTextField.getPreferredSize());
+        // Add the hebrew text box and "X" button for closing window
+        Box hebrewBox = new Box(BoxLayout.X_AXIS);
+        JTextField hebrewTextField = new JTextField(20);
+        hebrewTextField.setMaximumSize(hebrewTextField.getPreferredSize());
         JButton deleteButton = new JButton("✕");
         deleteButton.setActionCommand("x " + idTracker);
         deleteButton.addActionListener(this);
         deleteButton.setFocusable(false);
-        chineseBox.add(new JLabel("Chinese:"));
-        chineseBox.add(Box.createHorizontalStrut(5));
-        chineseBox.add(chineseTextField);
-        chineseBox.add(Box.createHorizontalGlue());
-        chineseBox.add(deleteButton);
+        hebrewBox.add(new JLabel("Hebrew:"));
+        hebrewBox.add(Box.createHorizontalStrut(5));
+        hebrewBox.add(hebrewTextField);
+        hebrewBox.add(Box.createHorizontalGlue());
+        hebrewBox.add(deleteButton);
 
-        // Add pinyin text box and genPinyinButton that generates pinyin based on chinese that is entered
-        Box pinyinBox = new Box(BoxLayout.X_AXIS);
-        JTextField pinyinTextField = new JTextField(20);
-        pinyinTextField.setMaximumSize(pinyinTextField.getPreferredSize());
-        JButton genPinyinButton = new JButton("Generate Pinyin from Chinese");
-        genPinyinButton.setActionCommand("genPinyin " + idTracker);
-        genPinyinButton.addActionListener(this);
-        genPinyinButton.setFocusable(false);
-        pinyinBox.add(new JLabel("Pinyin:"));
-        pinyinBox.add(Box.createHorizontalStrut(14));
-        pinyinBox.add(pinyinTextField);
-        pinyinBox.add(Box.createHorizontalGlue());
-        pinyinBox.add(genPinyinButton);
+        // Add transliteration text box and genTransliterationButton that generates transliteration based on hebrew that is entered
+        Box transliterationBox = new Box(BoxLayout.X_AXIS);
+        JTextField transliterationTextField = new JTextField(20);
+        transliterationTextField.setMaximumSize(transliterationTextField.getPreferredSize());
+        JButton genTransliterationButton = new JButton("Generate Transliteration from Hebrew");
+        genTransliterationButton.setActionCommand("genTransliteration " + idTracker);
+        genTransliterationButton.addActionListener(this);
+        genTransliterationButton.setFocusable(false);
+        transliterationBox.add(new JLabel("Transliteration:"));
+        transliterationBox.add(Box.createHorizontalStrut(14));
+        transliterationBox.add(transliterationTextField);
+        transliterationBox.add(Box.createHorizontalGlue());
+        transliterationBox.add(genTransliterationButton);
 
-        // Add english text box and genEnglishButton that generates english based on chinese that is entered
+        // Add english text box and genEnglishButton that generates english based on hebrew that is entered
         Box englishBox = new Box(BoxLayout.X_AXIS);
         JTextField englishTextField = new JTextField(20);
         englishTextField.setMaximumSize(englishTextField.getPreferredSize());
-        JButton genEnglishButton = new JButton("Generate English from Chinese");
+        JButton genEnglishButton = new JButton("Generate English from Hebrew");
         genEnglishButton.setActionCommand("genEnglish " + idTracker);
         genEnglishButton.addActionListener(this);
         genEnglishButton.setFocusable(false);
@@ -146,9 +146,9 @@ public class EditorPanel extends JPanel implements ActionListener {
         englishBox.add(genEnglishButton);
 
         // Create the card panel with the 3 Boxes from above
-        card.add(chineseBox);
+        card.add(hebrewBox);
         card.add(Box.createVerticalStrut(5));
-        card.add(pinyinBox);
+        card.add(transliterationBox);
         card.add(Box.createVerticalStrut(5));
         card.add(englishBox);
         card.add(Box.createVerticalStrut(5));
@@ -161,7 +161,7 @@ public class EditorPanel extends JPanel implements ActionListener {
     }
 
     /**
-     * This method goes through all of the JPanels in cards and extracts the chinese, pinyin, and english. It then saves
+     * This method goes through all of the JPanels in cards and extracts the hebrew, transliteration, and english. It then saves
      * these values as a Card in a Set.
      * @param name the name for the set.
      */
@@ -170,32 +170,19 @@ public class EditorPanel extends JPanel implements ActionListener {
         set.setName(name);
         for (HashMap.Entry<Integer, JPanel> entry : this.cards.entrySet()) {
             JPanel panel = entry.getValue();
-            String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
-            String pinyin = ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).getText();
+            String hebrew = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
+            String transliteration = ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).getText();
             String english = ((JTextField) ((Box) panel.getComponent(4)).getComponent(2)).getText();
             Card card = new Card();
-            card.setChinese(chinese);
-            card.setPinyin(pinyin);
+            card.setHebrew(hebrew);
+            card.setTransliteration(transliteration);
             card.setEnglish(english);
             set.getCards().add(card);
         }
         set.setFilename((setFileName != null && !setFileName.equals("")) ? setFileName : name + ".yaml");
-        ChineseFlashcards.sets.put(set.getName(), set);
-//        try {
-//            FileOutputStream fos;
-//            if (setFileName.equals("")) {
-//                fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + name + ".yaml");
-//            } else {
-//                fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + setFileName);
-//            }
-//            OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
-//            ChineseFlashcards.yaml.dump(set, osw);
-//            osw.close();
-//            fos.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        ChineseFlashcards.mainWindow.showWelcomePanel();
+        HebrewFlashcards.sets.put(set.getName(), set);
+
+        HebrewFlashcards.mainWindow.showWelcomePanel();
     }
 
     /**
@@ -205,13 +192,13 @@ public class EditorPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Exit")) {
-            ChineseFlashcards.mainWindow.showWelcomePanel();
+            HebrewFlashcards.mainWindow.showWelcomePanel();
         } else if (e.getActionCommand().equals("New Card")) {
             addNewCard();
             saveButton.setEnabled(cards.size() != 0);
             // Scroll to bottom to show new card
-            ChineseFlashcards.mainWindow.revalidate();
-            ChineseFlashcards.mainWindow.repaint();
+            HebrewFlashcards.mainWindow.revalidate();
+            HebrewFlashcards.mainWindow.repaint();
             scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
         } else if (e.getActionCommand().startsWith("x ")) {
             int index = Integer.parseInt(e.getActionCommand().replace("x ", ""));
@@ -230,11 +217,11 @@ public class EditorPanel extends JPanel implements ActionListener {
             String proposedName = "";
             while (proposedName != null) {
                 proposedName = JOptionPane.showInputDialog("Enter a name for this set:"); // Get input from user for set name
-                if (proposedName != null && !proposedName.trim().equals("")) { // If the the user did not press cancel and did not leave the input blank, continue
+                if (proposedName != null && !proposedName.trim().equals("")) { // If the user did not press cancel and did not leave the input blank, continue
                     // The stream can only accept objects that are effectively final, so a "final" version of proposedName must be created
                     String finalProposedName = proposedName.trim();
                     // If proposed name does not match other sets' name or filename, save the set and alert the user
-                    if (!ChineseFlashcards.sets.containsKey(finalProposedName) && ChineseFlashcards.sets.values().stream().noneMatch(set -> set.getFilename().equals(finalProposedName))) {
+                    if (!HebrewFlashcards.sets.containsKey(finalProposedName) && HebrewFlashcards.sets.values().stream().noneMatch(set -> set.getFilename().equals(finalProposedName))) {
                         saveSet(proposedName.trim());
                         JOptionPane.showMessageDialog(this, "Saved \"" + proposedName.trim() + "\" to file!", "Success", JOptionPane.INFORMATION_MESSAGE);
                         return;
@@ -245,22 +232,22 @@ public class EditorPanel extends JPanel implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Invalid Set Name. Please try again.", "Invalid Name", JOptionPane.WARNING_MESSAGE);
                 }
             }
-        } else if (e.getActionCommand().startsWith("genPinyin ")) {
-            JPanel panel = cards.get(Integer.parseInt(e.getActionCommand().replace("genPinyin ", "")));
-            String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
-            if (!chinese.equals("")) {
+        } else if (e.getActionCommand().startsWith("genTransliteration ")) {
+            JPanel panel = cards.get(Integer.parseInt(e.getActionCommand().replace("genTransliteration ", "")));
+            String hebrew = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
+            if (!hebrew.equals("")) {
                 try {
-                    // Attempts to find a value in the dictionary that matches the Chinese, then fills it in.
-                    ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).setText(ChineseFlashcards.dict.get(chinese).getPinyin());
+                    // Attempts to find a value in the dictionary that matches the Hebrew, then fills it in.
+                    ((JTextField) ((Box) panel.getComponent(2)).getComponent(2)).setText(HebrewFlashcards.dict.get(hebrew).getTransliteration());
                 } catch (Exception ignored) { }
             }
         } else if (e.getActionCommand().startsWith("genEnglish ")) {
             JPanel panel = cards.get(Integer.parseInt(e.getActionCommand().replace("genEnglish ", "")));
-            String chinese = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
-            if (!chinese.equals("")) {
+            String hebrew = ((JTextField) ((Box) panel.getComponent(0)).getComponent(2)).getText();
+            if (!hebrew.equals("")) {
                 try {
-                    // Attempts to find a value in the dictionary that matches the Chinese, then fills it in.
-                    ((JTextField) ((Box) panel.getComponent(4)).getComponent(2)).setText(ChineseFlashcards.dict.get(chinese).getEnglish());
+                    // Attempts to find a value in the dictionary that matches the Hebrew, then fills it in.
+                    ((JTextField) ((Box) panel.getComponent(4)).getComponent(2)).setText(HebrewFlashcards.dict.get(hebrew).getEnglish());
                 } catch (Exception ignored) { }
             }
         }

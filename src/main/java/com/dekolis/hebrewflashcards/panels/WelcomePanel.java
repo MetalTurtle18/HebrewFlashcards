@@ -1,6 +1,6 @@
 package com.dekolis.hebrewflashcards.panels;
 
-import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.HebrewFlashcards;
 import com.dekolis.hebrewflashcards.utils.Card;
 import com.dekolis.hebrewflashcards.utils.Set;
 
@@ -26,16 +26,16 @@ public class WelcomePanel extends JPanel implements ActionListener {
      * Constructor for WelcomePanel. Adds text and button to the panel.
      */
     public WelcomePanel() {
-        ChineseFlashcards.populateSetList();
+        HebrewFlashcards.populateSetList();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         Font welcomeFont = new Font("Arial Nova", Font.PLAIN, 38);
-        JLabel welcomeText = new JLabel("<html>Chinese Flashcard System<br/><p style='font-size:12pt'>Version 1.1.0</p></html>");
+        JLabel welcomeText = new JLabel("<html>Hebrew Flashcard System<br/><p style='font-size:12pt'>Version 1.1.0</p></html>");
         welcomeText.setAlignmentX(Component.CENTER_ALIGNMENT);
         welcomeText.setFont(welcomeFont);
         try {
-            welcomeText.setIcon(new ImageIcon(ImageIO.read(ChineseFlashcards.class.getResourceAsStream("/assets/CFSLarge.png"))));
+            welcomeText.setIcon(new ImageIcon(ImageIO.read(HebrewFlashcards.class.getResourceAsStream("/assets/CFSLarge.png")))); // TODO: new logo
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,7 +50,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
         selectSetScrollPane.setMaximumSize(new Dimension(300, 100));
         selectSetScrollPane.setBorder(new LineBorder(Color.WHITE, 1, true));
         setSelectionCheckboxes = new ArrayList<>();
-        ChineseFlashcards.sets.keySet().forEach(name -> {
+        HebrewFlashcards.sets.keySet().forEach(name -> {
             JCheckBox checkBox = new JCheckBox(name);
             checkBox.setActionCommand("SetSelectionCheckbox");
             checkBox.addActionListener(this);
@@ -118,18 +118,18 @@ public class WelcomePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         List<Set> selectedSets = setSelectionCheckboxes.stream()
                 .filter(AbstractButton::isSelected)
-                .map(jCheckBox -> ChineseFlashcards.sets.get(jCheckBox.getText()))
+                .map(jCheckBox -> HebrewFlashcards.sets.get(jCheckBox.getText()))
                 .collect(Collectors.toList());
         switch (e.getActionCommand()) {
             case "Start Flashcards" -> {
                 Set selectedSet = getRequestedSet(selectedSets);
                 if (selectedSet != null) {
-                    ChineseFlashcards.mainWindow.showFlashcardPanel(selectedSet, showStarredCards.isSelected());
+                    HebrewFlashcards.mainWindow.showFlashcardPanel(selectedSet, showStarredCards.isSelected());
                 }
             }
-            case "New" -> ChineseFlashcards.mainWindow.showEditorPanel();
-            case "Edit Selected Set" -> ChineseFlashcards.mainWindow.showEditorPanel(selectedSets.get(0));
-            case "Import" -> ChineseFlashcards.mainWindow.showImportPanel();
+            case "New" -> HebrewFlashcards.mainWindow.showEditorPanel();
+            case "Edit Selected Set" -> HebrewFlashcards.mainWindow.showEditorPanel(selectedSets.get(0));
+            case "Import" -> HebrewFlashcards.mainWindow.showImportPanel();
             case "SetSelectionCheckbox" -> {
                 switch ((int) setSelectionCheckboxes.stream().filter(AbstractButton::isSelected).count()) {
                     case 0 -> { // If no sets are selected, the edit set, start, and showStarredCards checkbox buttons will not work.
@@ -155,7 +155,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
             case "Games" -> {
                 Set selectedSet = getRequestedSet(selectedSets);
                 if (selectedSet != null) {
-                    ChineseFlashcards.mainWindow.showGameSelectorPopup(selectedSet);
+                    HebrewFlashcards.mainWindow.showGameSelectorPopup(selectedSet);
                 }
             }
         }

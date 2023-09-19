@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class ChineseFlashcards {
+public class HebrewFlashcards {
     public static MainWindow mainWindow;
     public static HashMap<String, Set> sets;
     public static Yaml yaml;
@@ -42,7 +42,7 @@ public class ChineseFlashcards {
         sets = new HashMap<>();
 
         // When the program is closed, the try statement below will try to save all the flashcard sets.
-        Runtime.getRuntime().addShutdownHook(new Thread(ChineseFlashcards::saveSets));
+        Runtime.getRuntime().addShutdownHook(new Thread(HebrewFlashcards::saveSets));
 
         SwingUtilities.invokeLater(() -> {
             // Opens the main window
@@ -64,7 +64,7 @@ public class ChineseFlashcards {
         if (files != null) {
             for (String name : files) {
                 try {
-                    FileInputStream fs = new FileInputStream(setsFolderLocation + "\\" + name);
+                    FileInputStream fs = new FileInputStream(setsFolderLocation + "/" + name);
                     Set set = yaml.load(fs);
                     set.setFilename(name);
                     sets.put(set.getName(), set);
@@ -78,12 +78,12 @@ public class ChineseFlashcards {
     }
 
     /**
-     * Parse the the CEDICT dictionary using string manipulation. Saves the dictionary entries to a hashmap of the Chinese
+     * Parse the CEDICT dictionary using string manipulation. Saves the dictionary entries to a hashmap of the Chinese
      * to the DictEntry with Pinyin and English.
      */
-    public static void parseDictionary() {
+    public static void parseDictionary() { // TODO: either get Hebrew dictionary or remove feature
         dict = new HashMap<>();
-        Scanner scan = new Scanner(new InputStreamReader(ChineseFlashcards.class.getResourceAsStream("/translate/cedict_ts.u8"), StandardCharsets.UTF_8));
+        Scanner scan = new Scanner(new InputStreamReader(HebrewFlashcards.class.getResourceAsStream("/translate/cedict_ts.u8"), StandardCharsets.UTF_8));
         int count = 0;
         while (scan.hasNextLine()) {
             count++;
@@ -108,7 +108,7 @@ public class ChineseFlashcards {
      */
     public static void setupSetsFolder() {
         try {
-            String jarLocation = new File(ChineseFlashcards.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+            String jarLocation = new File(HebrewFlashcards.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
             setsFolderLocation = jarLocation.substring(0, jarLocation.lastIndexOf("/")) + "/sets";
             Files.createDirectories(Path.of(setsFolderLocation));
         } catch (URISyntaxException | IOException e) {
@@ -119,8 +119,8 @@ public class ChineseFlashcards {
     public static void saveSets() {
         sets.forEach((name, set) -> {
             try {
-                FileOutputStream fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + set.getFilename());
-                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
+                FileOutputStream fos = new FileOutputStream(HebrewFlashcards.setsFolderLocation + "/" + set.getFilename());
+                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16); // TODO: different encoding?
                 yaml.dump(set, osw);
                 fos.close();
                 osw.close();

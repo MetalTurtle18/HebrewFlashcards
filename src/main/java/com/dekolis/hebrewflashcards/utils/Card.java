@@ -8,12 +8,12 @@ import java.util.ArrayList;
  */
 public class Card {
     private ArrayList<String> stars = new ArrayList<>();
-    private String chinese;
-    private String pinyin;
+    private String hebrew;
+    private String transliteration;
     private String english;
     private static final Font englishFont = new Font("Arial", Font.PLAIN, 30);
-    private static final Font pinyinFont = new Font("Arial", Font.PLAIN, 30);
-    private static final Font chineseFont = new Font("KaiTi", Font.PLAIN, 30);
+    private static final Font transliterationFont = new Font("Arial", Font.PLAIN, 30);
+    private static final Font chineseFont = new Font("KaiTi", Font.PLAIN, 30); // TODO: find font and implement changing from print to script fonts
 
     public ArrayList<String> getStars() {
         return stars;
@@ -24,28 +24,28 @@ public class Card {
         this.stars = stars;
     }
 
-    public String getChinese() {
-        return chinese;
+    public String getHebrew() {
+        return hebrew;
     }
 
-    public String getPinyin() {
-        return pinyin;
+    public String getTransliteration() {
+        return transliteration;
     }
 
     public String getEnglish() {
         return english;
     }
 
-    public void setChinese(String chinese) {
-        this.chinese = chinese;
+    public void setHebrew(String hebrew) {
+        this.hebrew = hebrew;
     }
 
     public void setEnglish(String english) {
         this.english = english;
     }
 
-    public void setPinyin(String pinyin) {
-        this.pinyin = pinyin;
+    public void setTransliteration(String transliteration) {
+        this.transliteration = transliteration;
     }
 
     public String getLanguageEntry(int language) {
@@ -53,17 +53,17 @@ public class Card {
             case Flashcard.ENGLISH -> {
                 return getEnglish();
             }
-            case Flashcard.CHINESE -> {
-                return getChinese();
+            case Flashcard.HEBREW -> {
+                return getHebrew();
             }
-            case Flashcard.PINYIN -> {
-                return getPinyin();
+            case Flashcard.TRANSLITERATION -> {
+                return getTransliteration();
             }
-            default -> throw new IllegalArgumentException("Invalid language. Must be Flashcard.CHINESE, Flashcard.ENGLISH, or Flashcard.PINYIN");
+            default -> throw new IllegalArgumentException("Invalid language. Must be Flashcard.HEBREW, Flashcard.ENGLISH, or Flashcard.TRANSLITERATION");
         }
     }
 
-    public static Font getChineseFont(int size) {
+    public static Font getHebrewFont(int size) {
         return chineseFont.deriveFont((float) size);
     }
 
@@ -71,8 +71,8 @@ public class Card {
         return englishFont.deriveFont((float) size);
     }
 
-    public static Font getPinyinFont(int size) {
-        return pinyinFont.deriveFont((float) size);
+    public static Font getTransliterationFont(int size) {
+        return transliterationFont.deriveFont((float) size);
     }
 
     public static Font getFont(int language, int size) {
@@ -80,13 +80,13 @@ public class Card {
             case Flashcard.ENGLISH -> {
                 return getEnglishFont(size);
             }
-            case Flashcard.CHINESE -> {
-                return getChineseFont(size);
+            case Flashcard.HEBREW -> {
+                return getHebrewFont(size);
             }
-            case Flashcard.PINYIN -> {
-                return getPinyinFont(size);
+            case Flashcard.TRANSLITERATION -> {
+                return getTransliterationFont(size);
             }
-            default -> throw new IllegalArgumentException("Invalid language. Must be Flashcard.CHINESE, Flashcard.ENGLISH, or Flashcard.PINYIN");
+            default -> throw new IllegalArgumentException("Invalid language. Must be Flashcard.HEBREW, Flashcard.ENGLISH, or Flashcard.TRANSLITERATION");
         }
     }
 
@@ -94,20 +94,20 @@ public class Card {
     public boolean equals(Object obj) {
         if (obj instanceof Card) {
             Card otherCard = (Card) obj;
-            return otherCard.getPinyin().equals(pinyin) && otherCard.getChinese().equals(chinese) && otherCard.getEnglish().equals(english);
+            return otherCard.getTransliteration().equals(transliteration) && otherCard.getHebrew().equals(hebrew) && otherCard.getEnglish().equals(english);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "Chinese: " + chinese + " English: " + english + " Pinyin: " + pinyin;
+        return "Hebrew: " + hebrew + " English: " + english + " Transliteration: " + transliteration;
     }
 
-    public static Card createCard(String chinese, String pinyin, String english) {
+    public static Card createCard(String hebrew, String transliteration, String english) {
         Card card = new Card();
-        card.setChinese(chinese);
-        card.setPinyin(pinyin);
+        card.setHebrew(hebrew);
+        card.setTransliteration(transliteration);
         card.setEnglish(english);
         return card;
     }

@@ -1,6 +1,6 @@
 package com.dekolis.hebrewflashcards.panels;
 
-import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.HebrewFlashcards;
 import com.dekolis.hebrewflashcards.utils.Flashcard;
 import com.dekolis.hebrewflashcards.utils.Set;
 
@@ -38,7 +38,7 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
     public FlashcardsViewer(Set selectedSet) {
         currentFlashcard = 0;
         isVisible = true;
-        termType = Flashcard.CHINESE;
+        termType = Flashcard.HEBREW;
         definitionType = Flashcard.ENGLISH;
 
         setLayout(new BorderLayout());
@@ -97,10 +97,10 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
         starButton.addActionListener(this);
 
 
-        JComboBox<String> termSelector = new JComboBox<>(new String[]{"Chinese", "Pinyin", "English"});
+        JComboBox<String> termSelector = new JComboBox<>(new String[]{"Hebrew", "Transliteration", "English"});
         termSelector.setName("termSelector");
         termSelector.addActionListener(this);
-        JComboBox<String> definitionSelector = new JComboBox<>(new String[]{"Chinese", "Pinyin", "English"});
+        JComboBox<String> definitionSelector = new JComboBox<>(new String[]{"Hebrew", "Transliteration", "English"});
         definitionSelector.setSelectedIndex(2);
         definitionSelector.setName("definitionSelector");
         definitionSelector.addActionListener(this);
@@ -249,8 +249,8 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
     public void updateTerm(String termType) {
         switch (termType) {
             case "English" -> this.termType = Flashcard.ENGLISH;
-            case "Pinyin" -> this.termType = Flashcard.PINYIN;
-            case "Chinese" -> this.termType = Flashcard.CHINESE;
+            case "Transliteration" -> this.termType = Flashcard.TRANSLITERATION;
+            case "Hebrew" -> this.termType = Flashcard.HEBREW;
         }
         flashcards.get(currentFlashcard).showSide(this.termType);
         if (!flashcards.get(currentFlashcard).hasStar(this.termType, definitionType)) {
@@ -267,8 +267,8 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
     public void updateDefinition(String definitionType) {
         switch (definitionType) {
             case "English" -> this.definitionType = Flashcard.ENGLISH;
-            case "Pinyin" -> this.definitionType = Flashcard.PINYIN;
-            case "Chinese" -> this.definitionType = Flashcard.CHINESE;
+            case "Transliteration" -> this.definitionType = Flashcard.TRANSLITERATION;
+            case "Hebrew" -> this.definitionType = Flashcard.HEBREW;
         }
         flashcards.get(currentFlashcard).showSide(termType);
         if (!flashcards.get(currentFlashcard).hasStar(termType, this.definitionType)) {
@@ -314,7 +314,7 @@ public class FlashcardsViewer extends JPanel implements ActionListener, MouseLis
             case "☆", "★" -> toggleStar();
             case "Back" -> {
                 isVisible = false;
-                ChineseFlashcards.mainWindow.showWelcomePanel();
+                HebrewFlashcards.mainWindow.showWelcomePanel();
             }
             case "Shuffle" -> shuffleSet();
         }

@@ -1,6 +1,6 @@
 package com.dekolis.hebrewflashcards.panels;
 
-import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.HebrewFlashcards;
 import com.dekolis.hebrewflashcards.utils.Set;
 import com.dekolis.hebrewflashcards.utils.Card;
 import com.dekolis.hebrewflashcards.utils.MatchCell;
@@ -53,12 +53,12 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
             public void componentResized(ComponentEvent e) {
                 mainPanel.setSize(getSize());
                 modalPanel.setSize(getSize());
-                ChineseFlashcards.mainWindow.revalidate();
-                ChineseFlashcards.mainWindow.repaint();
+                HebrewFlashcards.mainWindow.revalidate();
+                HebrewFlashcards.mainWindow.repaint();
             }
         });
-        ChineseFlashcards.mainWindow.addWindowStateListener(e -> {
-            ChineseFlashcards.mainWindow.reloadMatchPanel();
+        HebrewFlashcards.mainWindow.addWindowStateListener(e -> {
+            HebrewFlashcards.mainWindow.reloadMatchPanel();
             mainPanel.setSize(getSize());
             modalPanel.setSize(getSize());
         });
@@ -82,10 +82,10 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         resetButton = new JButton("Reset");
         resetButton.addActionListener(this);
 
-        firstSelector = new JComboBox<>(new String[]{"Random", "English", "Pinyin", "Chinese"});
+        firstSelector = new JComboBox<>(new String[]{"Random", "English", "Transliteration", "Hebrew"});
         firstSelector.addActionListener(this);
         firstSelector.setToolTipText("Set the first card type, press \"Reset\" button to update");
-        secondSelector = new JComboBox<>(new String[]{"Random", "English", "Pinyin", "Chinese"});
+        secondSelector = new JComboBox<>(new String[]{"Random", "English", "Transliteration", "Hebrew"});
         secondSelector.addActionListener(this);
         secondSelector.setToolTipText("Set the second card type, press \"Reset\" button to update");
 
@@ -128,10 +128,10 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case "Back" -> ChineseFlashcards.mainWindow.showWelcomePanel();
+            case "Back" -> HebrewFlashcards.mainWindow.showWelcomePanel();
             case "Start" -> {
                 matchCells.forEach(mc -> mc.setEnabled(true));
-                ChineseFlashcards.mainWindow.repaint();
+                HebrewFlashcards.mainWindow.repaint();
                 startTime = System.currentTimeMillis();
                 timer = new Timer(100, timer -> timerLabel.setText(formatToHHMMSSmmmm((currentTime = System.currentTimeMillis()) - startTime)));
                 timer.start();
@@ -157,8 +157,8 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
                     firstSelector.setEnabled(true);
                     secondSelector.setEnabled(true);
                     // Both revalidate() and repaint() are required for the cells to properly update
-                    ChineseFlashcards.mainWindow.revalidate();
-                    ChineseFlashcards.mainWindow.repaint();
+                    HebrewFlashcards.mainWindow.revalidate();
+                    HebrewFlashcards.mainWindow.repaint();
                 }
             }
         }
@@ -180,8 +180,8 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
             if (((MatchCell) e.getComponent()).getCard().equals(firstCell.getCard())) { // If user did choose correct card
                 if (((MatchCell) e.getComponent()).getLanguage() == firstCell.getLanguage()) {
                     firstCell.setBackground(MatchCell.regular);
-                    ChineseFlashcards.mainWindow.revalidate();
-                    ChineseFlashcards.mainWindow.repaint();
+                    HebrewFlashcards.mainWindow.revalidate();
+                    HebrewFlashcards.mainWindow.repaint();
                     firstCells.add(null);
                 } else {
                     score++;
@@ -210,8 +210,8 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
                     finalFirstCell.setBackground(MatchCell.regular);
                     e.getComponent().setBackground(MatchCell.regular);
                     timerLabel.setBackground(new Color(238, 238, 238)); // default background color
-                    ChineseFlashcards.mainWindow.revalidate();
-                    ChineseFlashcards.mainWindow.repaint();
+                    HebrewFlashcards.mainWindow.revalidate();
+                    HebrewFlashcards.mainWindow.repaint();
                 });
                 timer.setRepeats(false);
                 timer.start();
@@ -226,8 +226,8 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
         if (e.getSource() instanceof JSlider) {
             matchCellFontSize = ((JSlider) e.getSource()).getValue();
             matchCells.forEach(mc -> mc.getLabel().setFont(Card.getFont(mc.getLanguage(), matchCellFontSize)));
-            ChineseFlashcards.mainWindow.revalidate();
-            ChineseFlashcards.mainWindow.repaint();
+            HebrewFlashcards.mainWindow.revalidate();
+            HebrewFlashcards.mainWindow.repaint();
         }
     }
 
@@ -264,8 +264,8 @@ public class MatchPanel extends JLayeredPane implements ActionListener, MouseLis
     }
 
     public boolean addMatchCells(Set set, JPanel matchGrid, List<MatchCell> matchCells) {
-        int firstLanguage = firstSelector.getSelectedIndex() - 1; // this will make random = -1, english = 0, pinyin = 1, chinese = 2
-        int secondLanguage = secondSelector.getSelectedIndex() - 1; // this will make random = -1, english = 0, pinyin = 1, chinese = 2
+        int firstLanguage = firstSelector.getSelectedIndex() - 1; // this will make random = -1, english = 0, transliteration = 1, hebrew = 2
+        int secondLanguage = secondSelector.getSelectedIndex() - 1; // this will make random = -1, english = 0, transliteration = 1, hebrew = 2
         // If languages are same and not random, show warning popup and exit
         if (firstLanguage == secondLanguage && firstLanguage != -1) {
             JOptionPane.showMessageDialog(this, "Please select two different languages. You can set random for both, however.");

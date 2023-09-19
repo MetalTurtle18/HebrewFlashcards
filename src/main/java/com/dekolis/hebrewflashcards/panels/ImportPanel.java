@@ -1,6 +1,6 @@
 package com.dekolis.hebrewflashcards.panels;
 
-import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.HebrewFlashcards;
 import com.dekolis.hebrewflashcards.utils.DndJList;
 import com.dekolis.hebrewflashcards.utils.Set;
 import com.dekolis.hebrewflashcards.utils.Card;
@@ -57,7 +57,7 @@ public class ImportPanel extends JPanel implements ActionListener {
         dndJListPanel.setLayout(new BoxLayout(dndJListPanel, BoxLayout.Y_AXIS));
         JLabel dndTitle = new JLabel("Rearrange Order of Items:");
         dndTitle.setAlignmentX(CENTER_ALIGNMENT);
-        dndJList = new DndJList(Arrays.asList("≡ Chinese", "≡ Pinyin", "≡ English"));
+        dndJList = new DndJList(Arrays.asList("≡ Hebrew", "≡ Transliteration", "≡ English"));
         dndJList.setAlignmentX(CENTER_ALIGNMENT);
         dndJListPanel.add(dndTitle);
         dndJListPanel.add(Box.createRigidArea(new Dimension(0,5)));
@@ -120,7 +120,7 @@ public class ImportPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Exit")) {
-            ChineseFlashcards.mainWindow.showWelcomePanel();
+            HebrewFlashcards.mainWindow.showWelcomePanel();
         } else if (e.getActionCommand().equals("Import")) {
             if (nameTextField.getText().equals("") || inputTextArea.getText().equals("") ||
                     firstSeparatorTextField.getText().equals("") || secondSeparatorTextField.getText().equals("") ||
@@ -137,9 +137,9 @@ public class ImportPanel extends JPanel implements ActionListener {
             for (int i = 0; i < dndJList.getModel().getSize(); i++) {
                 String element = dndJList.getModel().getElementAt(i);
                 int type;
-                if (element.endsWith("Chinese")) {
+                if (element.endsWith("Hebrew")) {
                     type = 0;
-                } else if (element.endsWith("Pinyin")) {
+                } else if (element.endsWith("Transliteration")) {
                     type = 1;
                 } else if (element.endsWith("English")) {
                     type = 2;
@@ -171,16 +171,16 @@ public class ImportPanel extends JPanel implements ActionListener {
             set.setCards(cards);
             set.setName(nameTextField.getText());
             try {
-                FileOutputStream fos = new FileOutputStream(ChineseFlashcards.setsFolderLocation + "\\" + nameTextField.getText() + ".yaml");
-                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16);
-                ChineseFlashcards.yaml.dump(set, osw);
+                FileOutputStream fos = new FileOutputStream(HebrewFlashcards.setsFolderLocation + "/" + nameTextField.getText() + ".yaml");
+                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_16); // TODO: charset
+                HebrewFlashcards.yaml.dump(set, osw);
                 fos.close();
                 osw.close();
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(this, "Error saving file!", "File Save Error", JOptionPane.ERROR_MESSAGE);
             }
             JOptionPane.showMessageDialog(this, "Successfully imported set!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            ChineseFlashcards.mainWindow.showWelcomePanel();
+            HebrewFlashcards.mainWindow.showWelcomePanel();
         }
     }
 }

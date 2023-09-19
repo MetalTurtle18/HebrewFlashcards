@@ -1,8 +1,7 @@
 package com.dekolis.hebrewflashcards.windows;
 
-import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.HebrewFlashcards;
 import com.dekolis.hebrewflashcards.panels.*;
-import io.github.camshaft54.chineseflashcards.panels.*;
 import com.dekolis.hebrewflashcards.utils.Set;
 
 import javax.imageio.ImageIO;
@@ -28,7 +27,7 @@ public class MainWindow extends JFrame {
 
         // Set custom image as icon
         try {
-            setIconImage(ImageIO.read(ChineseFlashcards.class.getResourceAsStream("/assets/CFS.png")));
+            setIconImage(ImageIO.read(HebrewFlashcards.class.getResourceAsStream("/assets/CFS.png"))); // TODO: logo
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,7 +42,7 @@ public class MainWindow extends JFrame {
         root.add(welcomePanel, "welcome");
     }
 
-    // All of the methods below remove the current panel if applicable and replace it with a new one. They then set the
+    // All the methods below remove the current panel if applicable and replace it with a new one. They then set the
     // CardLayout to display the new panel.
 
     public void showFlashcardPanel(Set selectedSet, boolean isStarredSet) {

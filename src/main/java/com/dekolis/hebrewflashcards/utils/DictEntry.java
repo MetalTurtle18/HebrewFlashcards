@@ -1,19 +1,19 @@
 package com.dekolis.hebrewflashcards.utils;
 
 /**
- * Represents each entry in the dictionary. This class simply holds the pinyin and and english for the entry in the dict
- * object in ChineseFlashcards.
+ * Represents each entry in the dictionary. This class simply holds the transliteration and and english for the entry in the dict
+ * object in HebrewFlashcards.
  */
 public class DictEntry {
-    String pinyin;
+    String transliteration;
     String english;
-    public DictEntry(String pinyin, String english) {
-        this.pinyin = pinyin;
+    public DictEntry(String transliteration, String english) {
+        this.transliteration = transliteration;
         this.english = english;
     }
 
-    public String getPinyin() {
-        return pinyin;
+    public String getTransliteration() {
+        return transliteration;
     }
 
     public String getEnglish() {
@@ -23,7 +23,7 @@ public class DictEntry {
     @Override
     public String toString() {
         return "DictEntry{" +
-                "pinyin='" + pinyin + '\'' +
+                "transliteration='" + transliteration + '\'' +
                 ", english='" + english + '\'' +
                 '}';
     }

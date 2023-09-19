@@ -1,6 +1,6 @@
 package com.dekolis.hebrewflashcards.panels;
 
-import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.HebrewFlashcards;
 import com.dekolis.hebrewflashcards.utils.Flashcard;
 import com.dekolis.hebrewflashcards.utils.Set;
 import com.dekolis.hebrewflashcards.windows.SetSettingsPopup;
@@ -44,7 +44,7 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
         this.selectedSet = selectedSet;
         currentFlashcard = 0;
         isVisible = true;
-        termType = Flashcard.CHINESE;
+        termType = Flashcard.HEBREW;
         definitionType = Flashcard.ENGLISH;
 
         setLayout(new BorderLayout());
@@ -59,7 +59,7 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
         flashcardPanel.setBorder(new CompoundBorder(margin, lineBorder));
         add(flashcardPanel, BorderLayout.CENTER);
 
-        // Add all of the flashcards panels to the inner flashcard panel
+        // Add all the flashcards panels to the inner flashcard panel
         flashcards = new ArrayList<>();
         AtomicInteger i = new AtomicInteger();
         selectedSet.getCards().forEach(card -> {
@@ -100,10 +100,10 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
         starButton.addActionListener(this);
 
 
-        JComboBox<String> termSelector = new JComboBox<>(new String[]{"Chinese", "Pinyin", "English"});
+        JComboBox<String> termSelector = new JComboBox<>(new String[]{"Hebrew", "Transliteration", "English"});
         termSelector.setName("termSelector");
         termSelector.addActionListener(this);
-        JComboBox<String> definitionSelector = new JComboBox<>(new String[]{"Chinese", "Pinyin", "English"});
+        JComboBox<String> definitionSelector = new JComboBox<>(new String[]{"Hebrew", "Transliteration", "English"});
         definitionSelector.setSelectedIndex(2);
         definitionSelector.setName("definitionSelector");
         definitionSelector.addActionListener(this);
@@ -223,7 +223,7 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
         // If there are no cards left in the set, exit.
         if (flashcards.size() == 0) {
             JOptionPane.showMessageDialog(this, "There are no starred cards remaining in this set!", "No Starred Cards", JOptionPane.WARNING_MESSAGE);
-            ChineseFlashcards.mainWindow.showWelcomePanel();
+            HebrewFlashcards.mainWindow.showWelcomePanel();
             isVisible = false;
             return;
         }
@@ -254,8 +254,8 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
     public void updateTerm(String termType) {
         switch (termType) {
             case "English" -> this.termType = Flashcard.ENGLISH;
-            case "Pinyin" -> this.termType = Flashcard.PINYIN;
-            case "Chinese" -> this.termType = Flashcard.CHINESE;
+            case "Transliteration" -> this.termType = Flashcard.TRANSLITERATION;
+            case "Hebrew" -> this.termType = Flashcard.HEBREW;
         }
         flashcards.get(currentFlashcard).showSide(this.termType);
         if (!flashcards.get(currentFlashcard).hasStar(this.termType, definitionType)) {
@@ -268,8 +268,8 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
     public void updateDefinition(String definitionType) {
         switch (definitionType) {
             case "English" -> this.definitionType = Flashcard.ENGLISH;
-            case "Pinyin" -> this.definitionType = Flashcard.PINYIN;
-            case "Chinese" -> this.definitionType = Flashcard.CHINESE;
+            case "Transliteration" -> this.definitionType = Flashcard.TRANSLITERATION;
+            case "Hebrew" -> this.definitionType = Flashcard.HEBREW;
         }
         flashcards.get(currentFlashcard).showSide(termType);
         if (!flashcards.get(currentFlashcard).hasStar(termType, this.definitionType)) {
@@ -310,7 +310,7 @@ public class StarFlashcardsViewer extends JPanel implements ActionListener, Mous
             case "☆", "★" -> toggleStar();
             case "Back" -> {
                 isVisible = false;
-                ChineseFlashcards.mainWindow.showWelcomePanel();
+                HebrewFlashcards.mainWindow.showWelcomePanel();
             }
             // Opens SetSettingsPopup
             case "Settings" -> new SetSettingsPopup(selectedSet, flashcards.get(currentFlashcard), termType + " " + definitionType);

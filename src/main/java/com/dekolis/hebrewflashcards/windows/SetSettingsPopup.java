@@ -1,6 +1,6 @@
 package com.dekolis.hebrewflashcards.windows;
 
-import com.dekolis.hebrewflashcards.ChineseFlashcards;
+import com.dekolis.hebrewflashcards.HebrewFlashcards;
 import com.dekolis.hebrewflashcards.utils.Flashcard;
 import com.dekolis.hebrewflashcards.utils.Set;
 
@@ -36,12 +36,12 @@ public class SetSettingsPopup extends JFrame implements ActionListener {
         setTitle("Set Settings");
         // Dispose on close so that program is not halted when window is closed.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(ChineseFlashcards.mainWindow);
+        setLocationRelativeTo(HebrewFlashcards.mainWindow);
         setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
         getRootPane().setBorder(new EmptyBorder(10, 10, 10, 10));
         // Set custom image as icon
         try {
-            setIconImage(ImageIO.read(ChineseFlashcards.class.getResourceAsStream("/assets/CFS.png")));
+            setIconImage(ImageIO.read(HebrewFlashcards.class.getResourceAsStream("/assets/CFS.png"))); // TODO: logo
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,8 +73,8 @@ public class SetSettingsPopup extends JFrame implements ActionListener {
             case "Clear Stars with Current Language Configuration" -> set.getCards().forEach(card -> card.getStars().removeIf(s -> s.equals(currentLangConfig)));
             case "Clear All Stars for Current Card" -> currentFlashcard.removeStar(Character.getNumericValue(currentLangConfig.charAt(0)), Character.getNumericValue(currentLangConfig.charAt(2)));
         }
-        if (ChineseFlashcards.mainWindow.starFlashcardsViewer != null) {
-            ChineseFlashcards.mainWindow.starFlashcardsViewer.refreshFlashcard();
+        if (HebrewFlashcards.mainWindow.starFlashcardsViewer != null) {
+            HebrewFlashcards.mainWindow.starFlashcardsViewer.refreshFlashcard();
         }
         dispose();
     }

@@ -9,8 +9,8 @@ import java.util.ArrayList;
  */
 public class Flashcard extends JPanel {
     public static final int ENGLISH = 0;
-    public static final int PINYIN = 1;
-    public static final int CHINESE = 2;
+    public static final int TRANSLITERATION = 1;
+    public static final int HEBREW = 2;
     private final Card card;
     private final JLabel label;
     private int side;
@@ -36,12 +36,12 @@ public class Flashcard extends JPanel {
         if (side == ENGLISH) {
             font = Card.getEnglishFont(30);
             newText = card.getEnglish();
-        } else if (side == PINYIN) {
-            font = Card.getPinyinFont(30);
-            newText = card.getPinyin();
+        } else if (side == TRANSLITERATION) {
+            font = Card.getTransliterationFont(30);
+            newText = card.getTransliteration();
         } else {
-            font = Card.getChineseFont(30);
-            newText = card.getChinese();
+            font = Card.getHebrewFont(30);
+            newText = card.getHebrew();
         }
         // This gets the width of the font and keeps adding breaks to the JLabel until the width is less than the width of the flashcard
         FontMetrics fm = label.getFontMetrics(font);
@@ -91,7 +91,7 @@ public class Flashcard extends JPanel {
             String[] star = s.split(" ");
             displayText.add(getLangType(Integer.parseInt(star[0])) + " -> " + getLangType(Integer.parseInt(star[1])));
         });
-        if (displayText.size() > 0) {
+        if (!displayText.isEmpty()) {
             return String.join(", ", displayText);
         } else {
             return "None";
@@ -101,10 +101,10 @@ public class Flashcard extends JPanel {
     public String getLangType(int type) {
         if (type == ENGLISH) {
             return "English";
-        } else if (type == PINYIN) {
-            return "Pinyin";
-        } else if (type == CHINESE) {
-            return "Chinese";
+        } else if (type == TRANSLITERATION) {
+            return "Transliteration";
+        } else if (type == HEBREW) {
+            return "Hebrew";
         } else {
             return "Invalid";
         }
